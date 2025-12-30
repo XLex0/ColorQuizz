@@ -160,27 +160,79 @@ export default function Home() {
     ▲
   </button>
 </section>
-        {/* PANTALLA 3 */}
-        <section
-          ref={profileRef}
-          data-section="profile"
-          className="screen screen-profile"
-        >
-          <h3 className="sectionTitle">Perfil Visual</h3>
-          <div className="card">
-            <h4>¿Qué es el daltonismo?</h4>
-            <p>
-              Es una condición donde ciertas diferencias de color pueden ser
-              difíciles de percibir. (Aquí va tu texto real).
-            </p>
-            <h4>Tipos</h4>
-            <p>Deuteranopia, Protanopia, Tritanopia…</p>
-          </div>
+{/* PANTALLA 3 */}
+<section
+  ref={profileRef}
+  data-section="profile"
+  className="screen screen-profile"
+>
+  <h3 className="sectionTitle profileTitle">Perfil Visual</h3>
 
-          <button className="backTop" onClick={scrollToTop} aria-label="Volver arriba">
-            ▲
-          </button>
-        </section>
+  <div className="profileStack">
+    {/* Card 1 */}
+    <article className="profileCard">
+      <h4 className="profileCardTitle">¿Qué es el daltonismo?</h4>
+      <p className="profileText">
+        Si usted tiene daltonismo (deficiencia en la visión de los colores),
+        significa que ve los colores de manera diferente a la mayoría de las
+        personas. El daltonismo casi siempre hace difícil notar la diferencia
+        entre ciertos colores.
+      </p>
+    </article>
+
+    {/* Card 2 */}
+    <article className="profileCard">
+      <h4 className="profileCardTitle">¿Corro riesgo de presentar daltonismo?</h4>
+      <p className="profileText">
+        Los hombres corren un riesgo mucho mayor de presentar daltonismo que las
+        mujeres. También es más probable que usted sea daltónico si:
+      </p>
+      <ul className="profileBullets">
+        <li>Tiene antecedentes familiares de daltonismo</li>
+        <li>Tiene ciertas enfermedades oculares</li>
+        <li>
+          Tiene ciertos problemas de salud, como diabetes, enfermedad de Alzheimer
+          o esclerosis múltiple
+        </li>
+      </ul>
+    </article>
+
+    {/* Card 3 */}
+    <article className="profileCard">
+      <h4 className="profileCardTitle">Tipos de daltonismo</h4>
+
+      <p className="profileText">
+        El daltonismo rojo-verde es el más común e incluye:
+      </p>
+      <ul className="profileBullets">
+        <li><strong>Deuteranomalía:</strong> el verde se ve rojizo (leve).</li>
+        <li><strong>Protanomalía:</strong> el rojo se ve verdoso y menos brillante (leve).</li>
+        <li><strong>Protanopia y deuteranopia:</strong> no se distingue entre rojo y verde.</li>
+      </ul>
+
+      <p className="profileText">
+        El daltonismo azul-amarillo es menos común e incluye:
+      </p>
+      <ul className="profileBullets">
+        <li><strong>Tritanomalía:</strong> difícil diferenciar azul-verde y amarillo-rojo.</li>
+        <li>
+          <strong>Tritanopia:</strong> no se distinguen azul-verde, violeta-rojo ni
+          amarillo-rosado; colores menos brillantes.
+        </li>
+      </ul>
+
+      <p className="profileText">
+        El daltonismo completo (monocromacia) es raro y hace que la persona no vea colores;
+        puede incluir visión poco clara y sensibilidad a la luz.
+      </p>
+    </article>
+  </div>
+
+  <button className="backTop" onClick={scrollToTop} aria-label="Volver arriba">
+    ▲
+  </button>
+</section>
+
 
         {/* PANTALLA 4 */}
         <section

@@ -510,3 +510,65 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   .instructionsImg{ width: 240px; }
   .instructionsList{ font-size: 20px; }
 }
+
+/* PERFIL VISULA/*
+/* Pantalla */
+.screen-profile{
+  background: #f7f2d6;
+  padding: clamp(16px, 1vw, 48px) clamp(12px, 4vw, 56px);
+}
+
+/* Título */
+.profileTitle{
+  font-size: clamp(1.4rem, 2.2vw, 3rem); /* se adapta */
+  font-weight: 800;
+  margin: 0 0 clamp(12px, 2vw, 28px) 0;
+  text-align: left;
+  color: #111;
+}
+
+/* Contenedor: ancho adaptable y centrado */
+.profileStack{
+  width: min(100%, 1500px);           /* 👈 se adapta al viewport */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.6vw, 26px);
+}
+
+/* Card */
+.profileCard{
+  background: #f6e394;
+  border: 2px solid rgba(0,0,0,0.75);
+  border-radius: clamp(16px, 2vw, 28px);
+  padding: clamp(12px, 1vw, 26px) clamp(14px, 2.2vw, 34px);
+}
+
+/* Títulos dentro de cada card */
+.profileCardTitle{
+  margin: 0 0 clamp(6px, 1vw, 12px) 0;
+  font-size: clamp(1.25rem, 1.5vw, 2.2rem); /* 👈 adaptable */
+  font-weight: 900;
+  color: #7a0b0b;
+}
+
+/* Texto */
+.profileText{
+  margin: 0 0 clamp(6px, 1vw, 10px) 0;
+  font-size: clamp(0.95rem, 1vw, 1.4rem); /* 👈 adaptable */
+  line-height: 1.4;
+  color: #111;
+}
+
+/* Bullets */
+.profileBullets{
+  margin: clamp(4px, 0.8vw, 10px) 0 clamp(6px, 1vw, 10px) 0;
+  padding-left: clamp(18px, 2vw, 28px);
+  font-size: clamp(0.95rem, 1.vw, 1.4rem);
+  line-height: 1.4;
+  color: #111;
+}
+
+.profileBullets li{
+  margin: clamp(4px, 0.6vw, 8px) 0;
+}
