@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import SettingsModal from "../components/SettingsModal";
+import palette from "../assets/images/palette.png"; 
 
 const DEFAULTS = { colorBlind: false, contrast: 100, brightness: 100 };
 
@@ -115,46 +116,50 @@ export default function Home() {
         </section>
 
         {/* PANTALLA 2 */}
-        <section
-          ref={instructionsRef}
-          data-section="instructions"
-          className="screen screen-instructions"
-        >
-          <h3 className="sectionTitle">Instrucciones</h3>
-          <div className="card">
-            <ol>
-              <li>
-                Presiona “Comenzar” en la pantalla principal para iniciar el
-                juego.
-              </li>
-              <li>
-                Debes identificar colores, símbolos o patrones según lo que se
-                indique.
-              </li>
-              <li>
-                Si tienes daltonismo, activa el modo accesible para ver símbolos
-                y etiquetas.
-              </li>
-              <li>
-                Recibe retroalimentación:
-                <ul>
-                  <li>
-                    Si aciertas, verás un icono de éxito o escucharás un sonido.
-                  </li>
-                  <li>
-                    Si fallas, se mostrará un mensaje o un símbolo que lo
-                    indique.
-                  </li>
-                </ul>
-              </li>
-            </ol>
-          </div>
+<section
+  ref={instructionsRef}
+  data-section="instructions"
+  className="screen screen-instructions"
+>
+  <header className="instructionsHeader">
+    <div className="helpIcon" aria-hidden="true">?</div>
+    <h2 className="instructionsTitle">Instrucciones</h2>
+  </header>
 
-          <button className="backTop" onClick={scrollToTop} aria-label="Volver arriba">
-            ▲
-          </button>
-        </section>
+  <div className="instructionsLayout">
+    <img
+      className="instructionsImg"
+      src={palette}
+      alt="Rueda de colores"
+      draggable="false"
+    />
 
+    <div className="instructionsCard">
+      <ol className="instructionsList">
+        <li>
+          Presiona <strong>“Comenzar”</strong> en la pantalla principal para iniciar el juego.
+        </li>
+        <li>
+          Debes <strong>identificar</strong> colores, símbolos o patrones según lo que se indique.
+        </li>
+        <li>
+          Si tienes <strong>daltonismo</strong>, activa el modo accesible para ver símbolos y etiquetas junto a los colores.
+        </li>
+        <li>
+          Recibe <strong>retroalimentación</strong>:
+          <ul>
+            <li>Si <strong>aciertas</strong>, verás el ícono de éxito o escucharás un sonido.</li>
+            <li>Si <strong>fallas</strong>, se mostrará un mensaje o un símbolo que lo indique.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <button className="backTop" onClick={scrollToTop} aria-label="Volver arriba">
+    ▲
+  </button>
+</section>
         {/* PANTALLA 3 */}
         <section
           ref={profileRef}
