@@ -1,0 +1,228 @@
+:root{
+  --bg: #f8e6a3;
+  --bar: #f0b400;
+  --dark: #5b4a22;
+  --card: rgba(255,255,255,0.55);
+  --border: rgba(0,0,0,0.18);
+}
+
+*{ box-sizing:border-box; }
+body{ margin:0; font-family: system-ui, Arial; background: var(--bg); }
+
+.app{
+  min-height: 100vh;
+  filter: contrast(var(--contrast)) brightness(var(--brightness)) var(--cb-filter);
+}
+
+/* TOPBAR */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bar);
+  padding: 12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand{
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.topnav{
+  display:flex;
+  gap: 14px;
+  align-items:center;
+}
+
+.toplink{
+  background: transparent;
+  border: 0;
+  cursor:pointer;
+  font-weight: 700;
+  padding: 8px 10px;
+}
+
+.gearBtn{
+  border:0;
+  background: transparent;
+  font-size: 20px;
+  cursor:pointer;
+}
+
+/* Tooltip negro */
+.tooltip{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 62px;
+  width: min(700px, 92vw);
+  background: rgba(40,40,40,0.9);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+/* PAGE */
+.page{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px 14px 40px;
+}
+
+/* HERO */
+.hero{
+  padding: 16px 0 8px;
+}
+.heroBox{
+  border-radius: 14px;
+  padding: 28px 16px;
+  text-align:center;
+  background:
+    linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,.4)),
+    repeating-linear-gradient(
+      0deg,
+      rgba(220,120,120,.35),
+      rgba(220,120,120,.35) 2px,
+      rgba(220,120,120,.05) 2px,
+      rgba(220,120,120,.05) 10px
+    );
+  border: 1px solid var(--border);
+}
+
+.heroQ{ margin: 0 0 8px; font-style: italic; }
+.heroTitle{ margin: 0 0 12px; letter-spacing: 1px; }
+
+.primaryBtn{
+  background: #f2a74a;
+  border: 1px solid rgba(0,0,0,.25);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* TABS */
+.tabs{
+  margin: 14px 0 18px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 10px;
+  display:flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.tab{
+  flex:1;
+  border:0;
+  cursor:pointer;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.18);
+  color: #fff;
+  font-weight: 700;
+}
+.tab.active{
+  background: rgba(0,0,0,0.35);
+}
+
+/* Sections */
+.section{ scroll-margin-top: 92px; margin: 18px 0; }
+.sectionTitle{ margin: 0 0 10px; }
+
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+/* Modal */
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 20;
+}
+
+.modal{
+  width: min(420px, 95vw);
+  background: #ffe6a6;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  outline: none;
+}
+
+.modalHeader{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+}
+
+.xBtn{
+  border:0;
+  background: rgba(0,0,0,0.15);
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.row{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.block{ margin: 12px 0; }
+.label{ display:flex; justify-content: space-between; margin-bottom: 6px; }
+.muted{ opacity: .7; }
+
+/* Switch */
+.switch { position: relative; width: 52px; height: 30px; }
+.switch input { display: none; }
+.slider{
+  position:absolute; inset:0;
+  background:#ccc; border-radius:999px;
+  transition:.2s;
+}
+.slider::before{
+  content:"";
+  position:absolute;
+  width:22px; height:22px;
+  left:4px; top:4px;
+  background:#fff; border-radius:50%;
+  transition:.2s;
+}
+.switch input:checked + .slider{ background:#27ae60; }
+.switch input:checked + .slider::before{ transform: translateX(22px); }
+
+.resetBtn{
+  width:100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border:0;
+  border-radius: 999px;
+  background:#f2c94c;
+  font-weight: 900;
+  cursor:pointer;
+}
+
+.footer{
+  text-align:center;
+  margin-top: 28px;
+  opacity: .7;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
