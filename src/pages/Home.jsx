@@ -233,28 +233,47 @@ export default function Home() {
   </button>
 </section>
 
+{/* PANTALLA 4 */}
+<section
+  ref={testimonialsRef}
+  data-section="testimonials"
+  className="screen screen-testimonials"
+>
+  <h3 className="sectionTitle testimonialsTitle">Testimonios</h3>
 
-        {/* PANTALLA 4 */}
-        <section
-          ref={testimonialsRef}
-          data-section="testimonials"
-          className="screen screen-testimonials"
-        >
-          <h3 className="sectionTitle">Testimonios</h3>
-          <div className="card">
-            <p>⭐️⭐️⭐️⭐️⭐️ “Muy útil para entender mi visión.”</p>
-            <hr />
-            <p>⭐️⭐️⭐️⭐️ “La interfaz es clara y rápida.”</p>
-            <hr />
-            <p>⭐️⭐️⭐️⭐️⭐️ “Me gustó el modo accesible.”</p>
-          </div>
+  <div className="testimonialsStack">
+    <article className="testimonialCard">
+      <h4 className="testimonialPerson">Valeria P.</h4>
+      <div className="stars" aria-label="Calificación 5 de 5">★★★★★</div>
+      <p className="testimonialText">
+        “Muy útil para entender mi visión. Me ayudó a identificar patrones y a sentirme más segura usando el modo accesible.”
+      </p>
+    </article>
 
-          <button className="backTop" onClick={scrollToTop} aria-label="Volver arriba">
-            ▲
-          </button>
-        </section>
+    <article className="testimonialCard">
+      <h4 className="testimonialPerson">Diego M.</h4>
+      <div className="stars" aria-label="Calificación 4 de 5">★★★★☆</div>
+      <p className="testimonialText">
+        “La interfaz es clara y rápida. Me gustó que el feedback sea inmediato y que todo esté explicado sin abrumar.”
+      </p>
+    </article>
 
+    <article className="testimonialCard">
+      <h4 className="testimonialPerson">Camila R.</h4>
+      <div className="stars" aria-label="Calificación 5 de 5">★★★★★</div>
+      <p className="testimonialText">
+        “Me gustó el modo accesible. Las etiquetas y símbolos hacen que sea disfrutable incluso si confundo algunos colores.”
+      </p>
+    </article>
+  </div>
+
+  <button className="backTop" onClick={scrollToTop} aria-label="Volver arriba">
+    ▲
+  </button>
+  
         <footer className="footer">COLORQUIZZ</footer>
+</section>
+
       </main>
 
       {openSettings && (
