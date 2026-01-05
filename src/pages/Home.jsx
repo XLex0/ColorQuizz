@@ -87,8 +87,8 @@ export default function Home() {
         >
           <div className="hero">
             <div className="heroBox">
-              <p className="heroQ">¿Tienes daltonismo?</p>
-              <h2 className="heroTitle">HACER PRUEBA</h2>
+              <span className="heroQ">¿Tienes daltonismo?</span>
+              <h1 className="heroTitle">HACER PRUEBA</h1>
               <button className="primaryBtn">COMENZAR</button>
             </div>
           </div>
@@ -166,12 +166,12 @@ export default function Home() {
   data-section="profile"
   className="screen screen-profile"
 >
-  <h3 className="sectionTitle profileTitle">Perfil Visual</h3>
+  <h2 className="sectionTitle profileTitle">Perfil Visual</h2>
 
   <div className="profileStack">
     {/* Card 1 */}
     <article className="profileCard">
-      <h4 className="profileCardTitle">¿Qué es el daltonismo?</h4>
+      <h3 className="profileCardTitle">¿Qué es el daltonismo?</h3>
       <p className="profileText">
         Si usted tiene daltonismo (deficiencia en la visión de los colores),
         significa que ve los colores de manera diferente a la mayoría de las
@@ -182,7 +182,7 @@ export default function Home() {
 
     {/* Card 2 */}
     <article className="profileCard">
-      <h4 className="profileCardTitle">¿Corro riesgo de presentar daltonismo?</h4>
+      <h3 className="profileCardTitle">¿Corro riesgo de presentar daltonismo?</h3>
       <p className="profileText">
         Los hombres corren un riesgo mucho mayor de presentar daltonismo que las
         mujeres. También es más probable que usted sea daltónico si:
@@ -199,7 +199,7 @@ export default function Home() {
 
     {/* Card 3 */}
     <article className="profileCard">
-      <h4 className="profileCardTitle">Tipos de daltonismo</h4>
+      <h3 className="profileCardTitle">Tipos de daltonismo</h3>
 
       <p className="profileText">
         El daltonismo rojo-verde es el más común e incluye:
@@ -239,11 +239,11 @@ export default function Home() {
   data-section="testimonials"
   className="screen screen-testimonials"
 >
-  <h3 className="sectionTitle testimonialsTitle">Testimonios</h3>
+  <h2 className="sectionTitle testimonialsTitle">Testimonios</h2>
 
   <div className="testimonialsStack">
     <article className="testimonialCard">
-      <h4 className="testimonialPerson">Valeria P.</h4>
+      <h3 className="testimonialPerson">Valeria P.</h3>
       <div className="stars" aria-label="Calificación 5 de 5">★★★★★</div>
       <p className="testimonialText">
         “Muy útil para entender mi visión. Me ayudó a identificar patrones y a sentirme más segura usando el modo accesible.”
@@ -251,7 +251,7 @@ export default function Home() {
     </article>
 
     <article className="testimonialCard">
-      <h4 className="testimonialPerson">Diego M.</h4>
+      <h3 className="testimonialPerson">Diego M.</h3>
       <div className="stars" aria-label="Calificación 4 de 5">★★★★☆</div>
       <p className="testimonialText">
         “La interfaz es clara y rápida. Me gustó que el feedback sea inmediato y que todo esté explicado sin abrumar.”
@@ -259,7 +259,7 @@ export default function Home() {
     </article>
 
     <article className="testimonialCard">
-      <h4 className="testimonialPerson">Camila R.</h4>
+      <h3 className="testimonialPerson">Camila R.</h3>
       <div className="stars" aria-label="Calificación 5 de 5">★★★★★</div>
       <p className="testimonialText">
         “Me gustó el modo accesible. Las etiquetas y símbolos hacen que sea disfrutable incluso si confundo algunos colores.”
