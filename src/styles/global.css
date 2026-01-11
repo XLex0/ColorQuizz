@@ -1,28 +1,101 @@
-/* VARIABLES */
+/* =========================
+   TOKENS (COLORES + SOMBRAS)
+   ========================= */
 :root{
-  --bg: #f8e6a3;
-  --bar: #f0b400;
-  --dark: #5b4a22;
-  --card: rgba(255,255,255,0.55);
+  /* Base */
+  --app-bg: #f8e6a3;
+  --bar-bg: #f0b400;
+
+  /* Superficies */
+  --surface-1: rgba(255,255,255,0.35); /* heroBox */
+  --surface-2: rgba(255,255,255,0.55); /* cards suaves */
+  --panel-bg: #ffe6a6;                 /* modal */
+  --card-yellow: #f6e394;              /* instrucciones/perfil */
+  --card-peach: #f2cfa7;               /* testimonios */
+
+  /* Texto */
+  --text-1: #111;
+  --text-2: rgba(17,17,17,0.75);
+  --on-dark: #fff;
+
+  /* Bordes / sombras */
   --border: rgba(0,0,0,0.18);
+  --border-strong: rgba(0,0,0,0.75);
+  --shadow-1: 0 12px 30px rgba(0,0,0,0.08);
+  --shadow-2: 0 10px 22px rgba(0,0,0,0.18);
+
+  /* Accentos */
+  --accent: #f2a74a;     /* botón principal */
+  --accent-2: #f2c94c;   /* restablecer */
+  --help: #6a1b9a;       /* icono ? */
+  --danger: #7a0b0b;     /* títulos dentro de cards */
+
+  /* Layout */
   --container: min(1200px, 94vw);
+
+  /* Ajustes (inyectados desde React) */
+  --brightness: 100%;
 }
 
-/* RESET */
+
+.appContent{
+filter: contrast(var(--contrast)) brightness(var(--brightness));
+  transition: filter 120ms ease;
+}
+
+
+
+/* ALTO */
+.appContent[data-contrast="high"]{
+  --border: rgba(0,0,0,0.32);
+  --surface-1: rgba(255,255,255,0.55);
+  --surface-2: rgba(255,255,255,0.75);
+  --shadow-1: 0 14px 36px rgba(0,0,0,0.12);
+  --text-2: rgba(17,17,17,0.85);
+}
+
+/* MUY ALTO */
+.appContent[data-contrast="max"]{
+  --border: rgba(0,0,0,0.45);
+  --border-strong: rgba(0,0,0,0.90);
+
+  --surface-1: rgba(255,255,255,0.82);
+  --surface-2: rgba(255,255,255,0.90);
+
+  --shadow-1: 0 16px 44px rgba(0,0,0,0.16);
+  --shadow-2: 0 12px 26px rgba(0,0,0,0.22);
+
+  --text-1: #000;
+  --text-2: rgba(0,0,0,0.92);
+}
+
+
+/* =========================
+   RESET
+   ========================= */
 *{ box-sizing:border-box; }
 html, body{ height: 100%; }
-body{ margin:0; font-family: system-ui, Arial; background: transparent; }
+body{
+  margin:0;
+  font-family: system-ui, Arial;
+  background: transparent;
+  color: var(--text-1);
+}
 
-/* APP */
+/* =========================
+   APP
+   ========================= */
 .app{ min-height: 100vh; }
 
-/* NAVBAR */
+/* =========================
+   NAVBAR
+   ========================= */
 .topbar{
   position: sticky;
   top: 0;
   z-index: 50;
   height: 84px;
-  background: var(--bar);
+  background: var(--bar-bg);
   border-bottom: 1px solid rgba(0,0,0,0.12);
   display: flex;
   justify-content: center;
@@ -52,6 +125,7 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   font-weight: 900;
   letter-spacing: 1.5px;
   font-size: clamp(20px, 2.2vw, 28px);
+  color: var(--text-1);
 }
 
 .topnav{
@@ -70,10 +144,12 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   padding: 10px 14px;
   border-radius: 10px;
   font-size: clamp(14px, 1.2vw, 18px);
+  color: var(--text-1);
 }
 
 .toplink:hover{
   background: rgba(0,0,0,0.06);
+
 }
 
 .gearBtn{
@@ -84,6 +160,7 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   cursor:pointer;
   padding: 10px 12px;
   border-radius: 10px;
+  color: var(--text-1);
 }
 
 .gearBtn:hover{
@@ -102,12 +179,14 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   color: #fff;
   padding: 10px 14px;
   border-radius: 10px;
-  font-size: 17px;   /* o 17px si quieres */
+  font-size: 17px;
   z-index: 9999;
 }
 
 
-/* SCROLL + SNAP */
+/* =========================
+   SCROLL + SNAP
+   ========================= */
 .page{
   height: 100vh;
   overflow-y: auto;
@@ -127,7 +206,9 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   scroll-margin-top: 96px;
 }
 
-/* HERO */
+/* =========================
+   HERO
+   ========================= */
 .hero{
   min-height: calc(100vh - 120px);
   display: grid;
@@ -140,25 +221,27 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   border-radius: 16px;
   padding: clamp(18px, 3.5vw, 44px) clamp(16px, 3vw, 36px);
   text-align: center;
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--surface-1);
   border: 1px solid var(--border);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-1);
 }
 
 .heroQ{
   margin: 0 0 10px;
   font-style: italic;
   font-size: clamp(18px, 2.1vw, 28px);
+  color: var(--text-1);
 }
 
 .heroTitle{
   margin: 0 0 18px;
   letter-spacing: 1px;
   font-size: clamp(22px, 2.4vw, 34px);
+  color: var(--text-1);
 }
 
 .primaryBtn{
-  background: #f2a74a;
+  background: var(--accent);
   border: 1px solid rgba(0,0,0,.25);
   padding: 12px 26px;
   border-radius: 12px;
@@ -167,6 +250,7 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   font-size: clamp(14px, 1.6vw, 18px);
   box-shadow: 0 6px 0 rgba(0,0,0,0.12);
   transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  color: var(--text-1);
 }
 
 .primaryBtn:hover{
@@ -180,7 +264,9 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   box-shadow: 0 4px 0 rgba(0,0,0,0.12);
 }
 
-/* TABS */
+/* =========================
+   TABS
+   ========================= */
 .tabs{
   width: min(980px, 92vw);
   margin: 18px auto 0;
@@ -198,7 +284,7 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   padding: 14px 12px;
   border-radius: 12px;
   background: rgba(0,0,0,0.30);
-  color: #fff;
+  color: var(--on-dark);
   font-weight: 800;
   font-size: clamp(14px, 1.6vw, 18px);
   transition: background .15s ease, transform .12s ease, box-shadow .15s ease;
@@ -209,30 +295,32 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
 }
 
-.tab:active{
-  transform: translateY(1px);
-}
+.tab:active{ transform: translateY(1px); }
 
 .tab.active{
   background: rgba(0,0,0,0.55);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
 }
 
-/* SECTIONS */
+/* =========================
+   SECTIONS GENÉRICAS
+   ========================= */
 .section{ scroll-margin-top: 110px; margin: 18px 0; }
 
 .sectionTitle{
   width: min(980px, 92vw);
   margin: 0 auto 8px;
+  color: var(--text-1);
 }
 
 .card{
   width: min(980px, 92vw);
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(0,0,0,0.16);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: clamp(14px, 2.5vw, 22px);
+  color: var(--text-1);
 }
 
 .footer{
@@ -241,9 +329,12 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   opacity: .7;
   font-weight: 800;
   letter-spacing: 1px;
+  color: var(--text-1);
 }
 
-/* MODAL */
+/* =========================
+   MODAL
+   ========================= */
 .overlay{
   position: fixed;
   inset: 0;
@@ -256,11 +347,12 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
 
 .modal{
   width: min(420px, 95vw);
-  background: #ffe6a6;
+  background: var(--panel-bg);
   border-radius: 16px;
   padding: 16px;
   border: 1px solid var(--border);
   outline: none;
+  color: var(--text-1);
 }
 
 .modalHeader{
@@ -276,6 +368,7 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   width: 32px;
   height: 32px;
   cursor: pointer;
+  color: var(--text-1);
 }
 
 .row{
@@ -287,28 +380,17 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
 }
 
 .block{ margin: 12px 0; }
-.label{ display:flex; justify-content: space-between; margin-bottom: 6px; }
-.muted{ opacity: .7; }
 
-.switch{ position: relative; width: 52px; height: 30px; }
-.switch input{ display: none; }
-.slider{
-  position:absolute; inset:0;
-  background:#ccc;
-  border-radius:999px;
-  transition:.2s;
+.label{
+  display:flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
 }
-.slider::before{
-  content:"";
-  position:absolute;
-  width:22px; height:22px;
-  left:4px; top:4px;
-  background:#fff;
-  border-radius:50%;
-  transition:.2s;
+
+.muted{
+  opacity: 1;
+  color: var(--text-2);
 }
-.switch input:checked + .slider{ background:#27ae60; }
-.switch input:checked + .slider::before{ transform: translateX(22px); }
 
 .resetBtn{
   width:100%;
@@ -316,20 +398,24 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   padding: 10px 12px;
   border:0;
   border-radius: 999px;
-  background:#f2c94c;
+  background: var(--accent-2);
   font-weight: 900;
   cursor:pointer;
+  color: var(--text-1);
 }
 
-/* SCREEN COLORS */
+/* =========================
+   SCREEN COLORS
+   ========================= */
 .screen-home{ background: #FFEC99; }
 .screen-instructions{ background: #FFF9DB; }
 .screen-profile{ background: #FFF4E6; }
 .screen-testimonials{ background: #FFF9DB; }
 
-/* HOME OVERRIDES */
+/* =========================
+   HOME OVERRIDES
+   ========================= */
 .screen-home{
-  /* clave: centra verticalmente todo lo que hay en la pantalla */
   align-content: center;
   padding-top: clamp(18px, 2.2vw, 28px);
   padding-bottom: clamp(18px, 2.2vw, 28px);
@@ -379,21 +465,19 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   background: rgba(0,0,0,0.42);
 }
 
-.screen-home .tab:hover{
-  background: rgba(0,0,0,0.55);
-}
+.screen-home .tab:hover{ background: rgba(0,0,0,0.55); }
 
-.screen-home .tab.active{
-  background: rgba(0,0,0,0.70);
-}
+.screen-home .tab.active{ background: rgba(0,0,0,0.70); }
 
-/* BOTON FLOTANTE REGRESAR ARRIBA */
+/* =========================
+   BOTÓN FLOTANTE ARRIBA
+   ========================= */
 .screen{ position: relative; }
 
 .backTop{
   position: absolute;
   right: 18px;
-  bottom: clamp(72px, 12vh, 140px); /* relativo + límite (más arriba que 10%) */
+  bottom: clamp(72px, 12vh, 140px);
   width: 50px;
   height: 50px;
   border-radius: 999px;
@@ -409,16 +493,16 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
 }
 
 .backTop:hover{
-  background: rgba(0,0,0,0.90); /* más opaco */
+  background: rgba(0,0,0,0.90);
   transform: translateY(-2px);
   box-shadow: 0 14px 26px rgba(0,0,0,0.18);
 }
 
-.backTop:active{
-  transform: translateY(0px);
-}
+.backTop:active{ transform: translateY(0px); }
 
-/* Instrucciones*/
+/* =========================
+   INSTRUCCIONES
+   ========================= */
 .screen-instructions{
   background: #f7f2d6;
   padding: clamp(16px, 1vw, 48px) clamp(12px, 4vw, 56px);
@@ -436,8 +520,8 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   width: clamp(40px, 4vw, 54px);
   height: clamp(40px, 4vw, 54px);
   border-radius: 50%;
-  background: #6a1b9a;
-  color: #fff;
+  background: var(--help);
+  color: var(--on-dark);
   display: grid;
   place-items: center;
   font-size: clamp(22px, 2.2vw, 34px);
@@ -449,10 +533,10 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   font-size: clamp(1.6rem, 2.6vw, 2.75rem);
   font-weight: 800;
   margin: 0;
-  color: #111;
+  color: var(--text-1);
 }
 
-/* Layout adaptable (como perfil): ancho fluido y centrado */
+/* Layout adaptable */
 .instructionsLayout{
   width: min(100%, 1200px);
   margin: 0 auto;
@@ -462,21 +546,22 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   gap: clamp(14px, 3vw, 36px);
 }
 
-/* Imagen rueda (sin left fijo) */
+/* Imagen rueda */
 .instructionsImg{
   width: min(100%, 320px);
   height: auto;
   display: block;
-  justify-self: center; /* centra dentro de su columna */
+  justify-self: center;
 }
 
-/* Card amarilla (sin left fijo) */
+/* Card amarilla */
 .instructionsCard{
-  background: #f6e394;
-  border: 2px solid rgba(0,0,0,0.25);
+  background: var(--card-yellow);
+  border: 2px solid var(--border);
   border-radius: clamp(16px, 2vw, 24px);
   padding: clamp(14px, 2vw, 28px) clamp(16px, 2.2vw, 34px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+  box-shadow: var(--shadow-2);
+  color: var(--text-1);
 }
 
 /* Lista */
@@ -485,7 +570,7 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   padding-left: clamp(18px, 2vw, 26px);
   font-size: clamp(1rem, 1.5vw, 1.625rem);
   line-height: 1.45;
-  color: #111;
+  color: var(--text-1);
 }
 
 .instructionsList li{ margin: clamp(6px, 1vw, 10px) 0; }
@@ -496,100 +581,91 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   list-style: disc;
 }
 
-/* Responsive: cuando se estrecha, se apila */
+/* Responsive */
 @media (max-width: 900px){
   .instructionsLayout{
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: left;
   }
-  .instructionsImg{
-    width: min(240px, 70vw);
-  }
-  .instructionsCard{
-    width: 100%;
-  }
+  .instructionsImg{ width: min(240px, 70vw); }
+  .instructionsCard{ width: 100%; }
 }
 
-
-/* PERFIL VISULA/*
-/* Pantalla */
+/* =========================
+   PERFIL VISUAL
+   ========================= */
 .screen-profile{
   background: #f7f2d6;
   padding: clamp(16px, 1vw, 48px) clamp(12px, 4vw, 56px);
 }
 
-/* Título */
 .profileTitle{
-  font-size: clamp(1.4rem, 2.2vw, 3rem); /* se adapta */
+  font-size: clamp(1.4rem, 2.2vw, 3rem);
   font-weight: 800;
   margin: 0 0 clamp(12px, 2vw, 28px) 0;
   text-align: left;
-  color: #111;
+  color: var(--text-1);
 }
 
-/* Contenedor: ancho adaptable y centrado */
 .profileStack{
-  width: min(100%, 1500px);           /* 👈 se adapta al viewport */
+  width: min(100%, 1500px);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: clamp(12px, 1.6vw, 26px);
 }
 
-/* Card */
 .profileCard{
-  background: #f6e394;
-  border: 2px solid rgba(0,0,0,0.75);
+  background: var(--card-yellow);
+  border: 2px solid var(--border-strong);
   border-radius: clamp(16px, 2vw, 28px);
   padding: clamp(12px, 1vw, 26px) clamp(14px, 2.2vw, 34px);
+  color: var(--text-1);
 }
 
-/* Títulos dentro de cada card */
 .profileCardTitle{
   margin: 0 0 clamp(6px, 1vw, 12px) 0;
-  font-size: clamp(1.25rem, 1.5vw, 2.2rem); /* 👈 adaptable */
+  font-size: clamp(1.25rem, 1.5vw, 2.2rem);
   font-weight: 900;
-  color: #7a0b0b;
+  color: var(--danger);
 }
 
-/* Texto */
 .profileText{
   margin: 0 0 clamp(6px, 1vw, 10px) 0;
-  font-size: clamp(0.95rem, 1vw, 1.4rem); /* 👈 adaptable */
+  font-size: clamp(0.95rem, 1vw, 1.4rem);
   line-height: 1.4;
-  color: #111;
+  color: var(--text-1);
 }
 
-/* Bullets */
 .profileBullets{
   margin: clamp(4px, 0.8vw, 10px) 0 clamp(6px, 1vw, 10px) 0;
   padding-left: clamp(18px, 2vw, 28px);
-  font-size: clamp(0.95rem, 1.vw, 1.4rem);
+  font-size: clamp(0.95rem, 1vw, 1.4rem); /* FIX: 1.vw -> 1vw */
   line-height: 1.4;
-  color: #111;
+  color: var(--text-1);
 }
 
 .profileBullets li{
   margin: clamp(4px, 0.6vw, 8px) 0;
-
-  
 }
-/* TESTIMONIOS */
+
+/* =========================
+   TESTIMONIOS
+   ========================= */
 .screen-testimonials{
   background: #f7f2d6;
   padding: clamp(16px, 3vw, 48px) clamp(12px, 4vw, 56px);
 }
 
 .testimonialsTitle{
-  font-size: clamp(1.4rem, 2.2vw, 3rem); /* se adapta */
+  font-size: clamp(1.4rem, 2.2vw, 3rem);
   font-weight: 800;
   margin: 0 0 clamp(12px, 2vw, 28px) 0;
   text-align: left;
-  color: #111;
+  color: var(--text-1);
 }
 
-/* Contenedor igual a profileStack */
 .testimonialsStack{
   width: min(100%, 1500px);
   margin: 0 auto;
@@ -598,34 +674,32 @@ body{ margin:0; font-family: system-ui, Arial; background: transparent; }
   gap: clamp(12px, 1.8vw, 20px);
 }
 
-/* Card igual a profileCard pero con color propio */
 .testimonialCard{
-  background: #f2cfa7; /* tu color */
-  border: 2px solid rgba(0,0,0,0.75);
+  background: var(--card-peach);
+  border: 2px solid var(--border-strong);
   border-radius: clamp(16px, 2vw, 28px);
   padding: clamp(12px, 1vw, 26px) clamp(14px, 2.2vw, 34px);
+  color: var(--text-1);
 }
 
-/* Nombre como texto normal (no círculo) */
 .testimonialPerson{
   margin: 0 0 clamp(6px, 1vw, 12px) 0;
   font-size: clamp(1.1rem, 1.3vw, 1.6rem);
   font-weight: 900;
-  color: #111;
+  color: var(--text-1);
 }
 
-/* Estrellas: conserva tamaños */
 .stars{
   font-size: clamp(1.1rem, 1.6vw, 1.4rem);
   letter-spacing: 2px;
   line-height: 1;
   margin: 0 0 clamp(6px, 1vw, 10px) 0;
+  color: var(--text-1);
 }
 
-/* Texto: conserva tamaños */
 .testimonialText{
   margin: 0;
   font-size: clamp(0.95rem, 1.2vw, 1.05rem);
   line-height: 1.35;
-  color: #111;
+  color: var(--text-1);
 }

@@ -29,18 +29,6 @@ export default function SettingsModal({ value, onChange, onClose, onReset }) {
           </button>
         </div>
 
-        <div className="row">
-          <span>Modo para daltonismo</span>
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={value.colorBlind}
-              onChange={(e) => onChange({ ...value, colorBlind: e.target.checked })}
-            />
-            <span className="slider" />
-          </label>
-        </div>
-
         <div className="block">
           <div className="label">
             <span>Contraste</span>
@@ -51,7 +39,9 @@ export default function SettingsModal({ value, onChange, onClose, onReset }) {
             min="50"
             max="150"
             value={value.contrast}
-            onChange={(e) => onChange({ ...value, contrast: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({ ...value, contrast: Number(e.target.value) })
+            }
           />
         </div>
 
@@ -65,7 +55,9 @@ export default function SettingsModal({ value, onChange, onClose, onReset }) {
             min="50"
             max="150"
             value={value.brightness}
-            onChange={(e) => onChange({ ...value, brightness: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({ ...value, brightness: Number(e.target.value) })
+            }
           />
         </div>
 
