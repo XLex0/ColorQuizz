@@ -2,10 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import SettingsModal from "../components/SettingsModal";
 import palette from "../assets/images/palette.png";
+import { useNavigate } from "react-router-dom";
+import "../styles/global.css";
+
 
 const DEFAULTS = { contrast: 100, brightness: 100 };
 
 export default function Home() {
+  const nav = useNavigate();
+
   const homeRef = useRef(null);
   const instructionsRef = useRef(null);
   const profileRef = useRef(null);
@@ -80,13 +85,16 @@ export default function Home() {
 
         <main className="page">
 
-            {/* PANTALLA 1: HERO + TABS */}
+          {/* PANTALLA 1: HERO + TABS */}
           <section ref={homeRef} data-section="home" className="screen screen-home">
             <div className="hero">
               <div className="heroBox">
                 <p className="heroQ">¿Tienes daltonismo?</p>
                 <h2 className="heroTitle">HACER PRUEBA</h2>
-                <button className="primaryBtn">COMENZAR</button>
+                <button className="primaryBtn" onClick={() => nav("/test")}>
+                  COMENZAR
+                </button>
+
               </div>
             </div>
 
@@ -261,7 +269,7 @@ export default function Home() {
             <footer className="footer">COLORQUIZZ</footer>
           </section>
         </main>
-       </div>
+      </div>
 
       {openSettings && (
         <SettingsModal

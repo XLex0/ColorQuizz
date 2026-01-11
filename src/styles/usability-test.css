@@ -1,0 +1,189 @@
+:root{
+  --yellow: #f2c300;
+  --cream: #fdeaa6;
+  --ink: #111;
+  --border: #2a2a2a;
+
+  /* tamaños relativos */
+  --padX: clamp(1rem, 2.5vw, 2.25rem);
+  --topH: clamp(5.2rem, 9vw, 7rem);
+  --gap: clamp(1rem, 2.2vw, 1.75rem);
+
+  --paletteW: clamp(16rem, 20vw, 19rem);
+  --refW: clamp(18rem, 25vw, 24rem);
+
+  /* tablero cuadrado: relativo */
+  --boardSize: clamp(18rem, 28vw, 23rem);
+  --radius: 0.5rem;
+}
+
+.utWrap{
+  min-height: 100vh;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.utTopbar{
+  height: var(--topH);
+  background: var(--yellow);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 0 var(--padX);
+}
+
+.utBrand{
+  margin:0;
+  font-size: clamp(2rem, 3.8vw, 2.75rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.utExit{
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  padding: 0.85rem 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.utMain{
+  padding: var(--gap) var(--padX) calc(var(--gap) * 1.2);
+}
+
+.utGrid{
+  display:grid;
+  grid-template-columns: var(--paletteW) 1fr var(--refW);
+  gap: var(--gap);
+  align-items:start;
+}
+
+.utPanel{
+  background: transparent;
+}
+
+.utTitle{
+  margin: 0 0 0.6rem 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.utTitle--italic{
+  font-style: italic;
+}
+
+/* Paleta */
+.utPaletteGrid{
+  background: #fff2c9;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  box-shadow: 0 0.22rem 0 rgba(0,0,0,0.12);
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.95rem;
+}
+
+.utSwatchBtn{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  gap: 0.4rem;
+}
+
+.utSwatchColor{
+  width: clamp(3.2rem, 4.4vw, 3.7rem);
+  height: clamp(3.2rem, 4.4vw, 3.7rem);
+  border-radius: 0.55rem;
+  border: 2px solid rgba(0,0,0,0.15);
+}
+
+.utSwatchText{
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  font-size: 0.95rem;
+  line-height: 1.05;
+}
+
+.utSwatchKey{ font-weight: 800; }
+.utSwatchName{ font-weight: 500; }
+
+.utSwatchBtn.active .utSwatchColor{
+  outline: 3px solid rgba(0,0,0,0.25);
+}
+
+/* Board */
+.cbBoard{
+  width: var(--boardSize);
+}
+
+.cbSvg{
+  width: var(--boardSize);
+  height: var(--boardSize);
+  display:block;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.cbCircle{
+  cursor: pointer;
+}
+
+/* Referencia */
+.utReference{
+  width: var(--boardSize);
+  height: var(--boardSize);
+  background:#fff;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Footer */
+.utFooter{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  margin-top: calc(var(--gap) * 1.2);
+}
+
+.utQuestion{
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  font-weight: 800;
+  text-align: center;
+  flex: 1;
+}
+
+.utNext{
+  background:#fff;
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  padding: 0.8rem 1.1rem;
+  font-weight: 800;
+  cursor:pointer;
+  font-size: 1rem;
+}
+
+.utNext:disabled{
+  opacity: 0.5;
+  cursor:not-allowed;
+}
+
+/* Responsive: si la pantalla es chica, que baje a 1 columna */
+@media (max-width: 900px){
+  .utGrid{
+    grid-template-columns: 1fr;
+  }
+  .utReference, .cbBoard, .cbSvg{
+    width: min(90vw, var(--boardSize));
+    height: min(90vw, var(--boardSize));
+  }
+}
