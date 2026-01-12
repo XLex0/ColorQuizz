@@ -10,7 +10,8 @@
   --gap: clamp(1rem, 2.2vw, 1.75rem);
 
   --paletteW: clamp(16rem, 20vw, 19rem);
-  --refW: clamp(18rem, 25vw, 24rem);
+  /* For visual alignment make reference column use the same square size as the board */
+  --refW: var(--boardSize);
 
   /* tablero cuadrado: relativo */
   --boardSize: clamp(18rem, 28vw, 23rem);
@@ -147,6 +148,26 @@
   border-radius: var(--radius);
 }
 
+/* Ensure the reference image matches the board visually and scales cleanly */
+.utPanel--ref{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+.utPanel--ref .referenceImage{
+  width: var(--boardSize);
+  height: var(--boardSize);
+  display:block;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  object-fit: contain;
+  box-shadow: 0 0.18rem 0 rgba(0,0,0,0.08);
+  margin-top: 0.35rem;
+  box-sizing: border-box;
+}
+
 /* Footer */
 .utFooter{
   display:flex;
@@ -186,4 +207,14 @@
     width: min(90vw, var(--boardSize));
     height: min(90vw, var(--boardSize));
   }
+}
+
+/* Reference Image */
+.referenceImage {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: white;
 }
