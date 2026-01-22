@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 /** PRNG reproducible por seed (Mulberry32) */
 function mulberry32(seed) {
@@ -43,10 +43,22 @@ function generateCircles({ count, seed }) {
   return circles;
 }
 
+/** Mapeo de índices a teclas */
+const CIRCLE_KEYS = [
+  "1", "2", "3", "4", "5",
+  "6", "7", "8", "9", "0",
+  "q", "w", "y", "r", "t"
+];
+
+function getKeyForCircleIndex(idx) {
+  return CIRCLE_KEYS[idx] || "?";
+}
+
 export default function PaintBoard({
   seed = 1,
   circlesCount = 15,
   selectedColor,
+  selectedCircleIndex,
   onProgress,
 }) {
   const circles = useMemo(
@@ -56,35 +68,90 @@ export default function PaintBoard({
 
   const [fills, setFills] = useState({});
 
+  /** Pintar un círculo por ID */
   const paint = (id) => {
+    if (!selectedColor) return;
+
     setFills((prev) => {
+      if (prev[id] === selectedColor) return prev;
+
       const next = { ...prev, [id]: selectedColor };
-      onProgress?.({ painted: Object.keys(next).length, total: circlesCount });
+      onProgress?.({
+        painted: Object.keys(next).length,
+        total: circlesCount,
+      });
       return next;
     });
   };
 
+  /**
+   * ✅ EFECTO CORRECTO:
+   * Pinta cuando cambia el círculo seleccionado o el color
+   * (NO durante el render)
+   */
+  useEffect(() => {
+    if (
+      selectedCircleIndex == null ||
+      !selectedColor ||
+      !circles[selectedCircleIndex]
+    ) {
+      return;
+    }
+
+    paint(circles[selectedCircleIndex].id);
+  }, [selectedCircleIndex, selectedColor, circles]);
+
   return (
     <div className="cbBoard">
-      <svg className="cbSvg" viewBox="0 0 360 360" preserveAspectRatio="none">
-        <rect x="4" y="4" width="352" height="352" rx="10" fill="white" />
-        {circles.map((c) => {
+      <svg
+        className="cbSvg"
+        viewBox="0 0 360 360"
+        preserveAspectRatio="none"
+      >
+        <rect
+          x="4"
+          y="4"
+          width="352"
+          height="352"
+          rx="10"
+          fill="white"
+        />
+
+        {circles.map((c, idx) => {
           const cx = c.x * 360;
           const cy = c.y * 360;
+          const isFilled = !!fills[c.id];
+          const isSelected = selectedCircleIndex === idx;
+          const displayKey = getKeyForCircleIndex(idx);
 
           return (
+          <g key={c.id}>
             <circle
-              key={c.id}
               cx={cx}
               cy={cy}
               r={12}
               fill={fills[c.id] ?? "#FFFFFF"}
-              stroke="#2a2a2a"
-              strokeWidth="2"
+              stroke={isSelected ? "#000000" : "#2a2a2a"}
+              strokeWidth={isSelected ? "3" : "2"}
               className="cbCircle"
               onClick={() => paint(c.id)}
             />
-          );
+
+            <text
+              x={cx}
+              y={cy}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="9"
+              fontWeight="bold"
+              fill={isFilled ? "#FFFFFF" : "#2a2a2a"}
+              pointerEvents="none"
+              style={{ userSelect: "none" }}
+            >
+              {displayKey}
+            </text>
+          </g>
+        );
         })}
       </svg>
     </div>

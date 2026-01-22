@@ -3,91 +3,128 @@ import { useNavigate } from "react-router-dom";
 import PaintBoard from "../components/PaintBoard";
 import "../styles/usability-test.css";
 
-const COLORS = [
-  { key: "A", hex: "#FF3B3B" },
-  { key: "B", hex: "#FF9A2E" },
-  { key: "C", hex: "#FFD400" },
-  { key: "D", hex: "#31C95A" },
-  { key: "E", hex: "#14B8FF" },
-  { key: "F", hex: "#6A5CFF" },
-  { key: "G", hex: "#9AA0A6" },
-  { key: "H", hex: "#D92EE6" },
+// Configuración de colores por tipo de daltonismo
+const DEUTERANOMALY_COLORS = [
+  { key: "A", hex: "#D62E1C" },  // Rojo oscuro (confunde con marrón)
+  { key: "B", hex: "#D97706" },  // Naranja-marrón (confunde con rojo)
+  { key: "C", hex: "#84CC16" },  // Verde-amarillo (confunde)
+  { key: "D", hex: "#228B22" },  // Verde oscuro (confunde con marrón)
+  { key: "E", hex: "#1E40AF" },  // Azul (distinguible)
+  { key: "F", hex: "#64748B" },  // Gris azulado (neutral)
+  { key: "G", hex: "#4B5563" },  // Gris oscuro (neutral)
+  { key: "H", hex: "#2563EB" },  // Azul claro (distinguible)
+];
+
+const PROTANOMALY_PROTANOPIA_COLORS = [
+  { key: "A", hex: "#DC2626" },  // Rojo puro (rojo > marrón)
+  { key: "B", hex: "#EA580C" },  // Naranja (muy difícil de distinguir del rojo)
+  { key: "C", hex: "#6B7280" },  // Gris oscuro (neutral)
+  { key: "D", hex: "#22C55E" },  // Verde (confunde con amarillo)
+  { key: "E", hex: "#3B82F6" },  // Azul (distinguible)
+  { key: "F", hex: "#FBBF24" },  // Amarillo (confunde con rojo)
+  { key: "G", hex: "#EF4444" },  // Rojo claro (similar al naranja)
+  { key: "H", hex: "#60A5FA" },  // Azul claro (distinguible)
+];
+
+const TRITANOMALY_COLORS = [
+  { key: "A", hex: "#2563EB" },  // Azul (confunde con rojo)
+  { key: "B", hex: "#3B82F6" },  // Azul claro (confunde con amarillo)
+  { key: "C", hex: "#FCD34D" },  // Amarillo (confunde con rosa/magenta)
+  { key: "D", hex: "#EC4899" },  // Rosa (confunde con azul)
+  { key: "E", hex: "#8B5CF6" },  // Morado (confunde con amarillo)
+  { key: "F", hex: "#EF4444" },  // Rojo (confunde con azul)
+  { key: "G", hex: "#64748B" },  // Gris (neutral)
+  { key: "H", hex: "#10B981" },  // Verde (confunde con gris)
+];
+
+const TRITANOPIA_COLORS = [
+  { key: "A", hex: "#1E3A8A" },  // Azul oscuro (confunde con rojo)
+  { key: "B", hex: "#0369A1" },  // Azul cyan (similar)
+  { key: "C", hex: "#F59E0B" },  // Amarillo oscuro (confunde con rosa)
+  { key: "D", hex: "#D946EF" },  // Magenta (confunde con azul)
+  { key: "E", hex: "#7C3AED" },  // Morado (confunde con rojo)
+  { key: "F", hex: "#EF4444" },  // Rojo (confunde con azul)
+  { key: "G", hex: "#94A3B8" },  // Gris (neutral)
+  { key: "H", hex: "#14B8A6" },  // Verde agua (similar)
 ];
 
 const SEEDS = [1024, 2048, 3072, 4096, 5120];
 
-// Configuración de pruebas
+// Configuración de pruebas con colores específicos para cada tipo de daltonismo
 const TESTS = [
   {
     id: 0,
-    name: "Prueba Rojo-Verde",
+    name: "Pregunta 1: Deuteranomalía",
+    type: "deuteranomaly",
     colors: [
-      { x: 0.22, y: 0.22, hex: "#FF3B3B" },  // Rojo
-      { x: 0.5, y: 0.22, hex: "#31C95A" },   // Verde
-      { x: 0.78, y: 0.22, hex: "#FF9A2E" },  // Naranja
-      { x: 0.22, y: 0.5, hex: "#FFD400" },   // Amarillo
-      { x: 0.5, y: 0.5, hex: "#14B8FF" },    // Azul
-      { x: 0.78, y: 0.5, hex: "#6A5CFF" },   // Morado
-      { x: 0.36, y: 0.78, hex: "#9AA0A6" },  // Gris
-      { x: 0.64, y: 0.78, hex: "#D92EE6" },  // Rosa
+      { x: 0.22, y: 0.22, hex: "#D62E1C" },  // Rojo oscuro
+      { x: 0.5, y: 0.22, hex: "#D97706" },   // Naranja-marrón
+      { x: 0.78, y: 0.22, hex: "#84CC16" },  // Verde-amarillo
+      { x: 0.22, y: 0.5, hex: "#228B22" },   // Verde oscuro
+      { x: 0.5, y: 0.5, hex: "#1E40AF" },    // Azul
+      { x: 0.78, y: 0.5, hex: "#64748B" },   // Gris azulado
+      { x: 0.36, y: 0.78, hex: "#4B5563" },  // Gris oscuro
+      { x: 0.64, y: 0.78, hex: "#2563EB" },  // Azul claro
     ]
   },
   {
     id: 1,
-    name: "Prueba Amarillo-Rosado",
+    name: "Pregunta 2: Protanomalía, Protanopia y Deuteranopia",
+    type: "protanomaly_protanopia_deuteranopia",
     colors: [
-      { x: 0.22, y: 0.22, hex: "#FFD400" },  // Amarillo
-      { x: 0.5, y: 0.22, hex: "#14B8FF" },   // Azul
-      { x: 0.78, y: 0.22, hex: "#D92EE6" },  // Rosa
-      { x: 0.22, y: 0.5, hex: "#FF3B3B" },   // Rojo
-      { x: 0.5, y: 0.5, hex: "#31C95A" },    // Verde
-      { x: 0.78, y: 0.5, hex: "#9AA0A6" },   // Gris
-      { x: 0.36, y: 0.78, hex: "#6A5CFF" },  // Morado
-      { x: 0.64, y: 0.78, hex: "#FF9A2E" },  // Naranja
+      { x: 0.22, y: 0.22, hex: "#DC2626" },  // Rojo puro
+      { x: 0.5, y: 0.22, hex: "#EA580C" },   // Naranja
+      { x: 0.78, y: 0.22, hex: "#6B7280" },  // Gris oscuro
+      { x: 0.22, y: 0.5, hex: "#22C55E" },   // Verde
+      { x: 0.5, y: 0.5, hex: "#3B82F6" },    // Azul
+      { x: 0.78, y: 0.5, hex: "#FBBF24" },   // Amarillo
+      { x: 0.36, y: 0.78, hex: "#EF4444" },  // Rojo claro
+      { x: 0.64, y: 0.78, hex: "#60A5FA" },  // Azul claro
     ]
-  }
-  ,
-  // Placeholder tests so teammates can edit their specific questions
+  },
   {
     id: 2,
-    name: "Prueba 3 (placeholder)",
+    name: "Pregunta 3: Tritanomalía",
+    type: "tritanomaly",
     colors: [
-      { x: 0.22, y: 0.22, hex: "#FF3B3B" },
-      { x: 0.5, y: 0.22, hex: "#FF9A2E" },
-      { x: 0.78, y: 0.22, hex: "#FFD400" },
-      { x: 0.22, y: 0.5, hex: "#31C95A" },
-      { x: 0.5, y: 0.5, hex: "#14B8FF" },
-      { x: 0.78, y: 0.5, hex: "#6A5CFF" },
-      { x: 0.36, y: 0.78, hex: "#9AA0A6" },
-      { x: 0.64, y: 0.78, hex: "#D92EE6" },
+      { x: 0.22, y: 0.22, hex: "#2563EB" },  // Azul
+      { x: 0.5, y: 0.22, hex: "#3B82F6" },   // Azul claro
+      { x: 0.78, y: 0.22, hex: "#FCD34D" },  // Amarillo
+      { x: 0.22, y: 0.5, hex: "#EC4899" },   // Rosa
+      { x: 0.5, y: 0.5, hex: "#8B5CF6" },    // Morado
+      { x: 0.78, y: 0.5, hex: "#EF4444" },   // Rojo
+      { x: 0.36, y: 0.78, hex: "#64748B" },  // Gris
+      { x: 0.64, y: 0.78, hex: "#10B981" },  // Verde
     ]
   },
   {
     id: 3,
-    name: "Prueba 4 (placeholder)",
+    name: "Pregunta 4: Tritanopia",
+    type: "tritanopia",
     colors: [
-      { x: 0.22, y: 0.22, hex: "#FFD400" },
-      { x: 0.5, y: 0.22, hex: "#14B8FF" },
-      { x: 0.78, y: 0.22, hex: "#D92EE6" },
-      { x: 0.22, y: 0.5, hex: "#FF3B3B" },
-      { x: 0.5, y: 0.5, hex: "#31C95A" },
-      { x: 0.78, y: 0.5, hex: "#9AA0A6" },
-      { x: 0.36, y: 0.78, hex: "#6A5CFF" },
-      { x: 0.64, y: 0.78, hex: "#FF9A2E" },
+      { x: 0.22, y: 0.22, hex: "#1E3A8A" },  // Azul oscuro
+      { x: 0.5, y: 0.22, hex: "#0369A1" },   // Azul cyan
+      { x: 0.78, y: 0.22, hex: "#F59E0B" },  // Amarillo oscuro
+      { x: 0.22, y: 0.5, hex: "#D946EF" },   // Magenta
+      { x: 0.5, y: 0.5, hex: "#7C3AED" },    // Morado
+      { x: 0.78, y: 0.5, hex: "#EF4444" },   // Rojo
+      { x: 0.36, y: 0.78, hex: "#94A3B8" },  // Gris
+      { x: 0.64, y: 0.78, hex: "#14B8A6" },  // Verde agua
     ]
   },
   {
     id: 4,
-    name: "Prueba 5 (placeholder)",
+    name: "Pregunta 5: Confirmación Final",
+    type: "confirmation",
     colors: [
-      { x: 0.22, y: 0.22, hex: "#14B8FF" },
-      { x: 0.5, y: 0.22, hex: "#FF3B3B" },
-      { x: 0.78, y: 0.22, hex: "#31C95A" },
-      { x: 0.22, y: 0.5, hex: "#FF9A2E" },
-      { x: 0.5, y: 0.5, hex: "#6A5CFF" },
-      { x: 0.78, y: 0.5, hex: "#D92EE6" },
-      { x: 0.36, y: 0.78, hex: "#9AA0A6" },
-      { x: 0.64, y: 0.78, hex: "#FFD400" },
+      { x: 0.22, y: 0.22, hex: "#DC2626" },  // Rojo
+      { x: 0.5, y: 0.22, hex: "#EA580C" },   // Naranja
+      { x: 0.78, y: 0.22, hex: "#22C55E" },  // Verde
+      { x: 0.22, y: 0.5, hex: "#3B82F6" },   // Azul
+      { x: 0.5, y: 0.5, hex: "#64748B" },    // Gris
+      { x: 0.78, y: 0.5, hex: "#8B5CF6" },   // Morado
+      { x: 0.36, y: 0.78, hex: "#EC4899" },  // Rosa
+      { x: 0.64, y: 0.78, hex: "#FCD34D" },  // Amarillo
     ]
   }
 ];
@@ -163,14 +200,33 @@ export default function UsabilityTest() {
   const totalQuestions = TESTS.length;
   const [qIndex, setQIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState("A");
+  const [selectedCircleIndex, setSelectedCircleIndex] = useState(null);
   const [progress, setProgress] = useState({ painted: 0, total: 15 });
 
   const currentTest = TESTS[qIndex];
   const currentSeed = SEEDS[qIndex];
 
+  // Obtener los colores según el tipo de prueba
+  const getColorsForTest = () => {
+    switch (TESTS[qIndex].type) {
+      case "deuteranomaly":
+        return DEUTERANOMALY_COLORS;
+      case "protanomaly_protanopia_deuteranopia":
+        return PROTANOMALY_PROTANOPIA_COLORS;
+      case "tritanomaly":
+        return TRITANOMALY_COLORS;
+      case "tritanopia":
+        return TRITANOPIA_COLORS;
+      default:
+        return PROTANOMALY_PROTANOPIA_COLORS;
+    }
+  };
+
+  const colorsForCurrentTest = getColorsForTest();
+
   const selected = useMemo(
-    () => COLORS.find((c) => c.key === selectedKey) ?? COLORS[0],
-    [selectedKey]
+    () => colorsForCurrentTest.find((c) => c.key === selectedKey) ?? colorsForCurrentTest[0],
+    [selectedKey, qIndex]
   );
 
   const questionText = useMemo(
@@ -192,19 +248,36 @@ export default function UsabilityTest() {
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      const k = (e.key || "").toUpperCase();
-      const valid = COLORS.some((c) => c.key === k);
-      if (!valid) return;
-
+      const key = e.key || "";
       const tag = (e.target?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea") return;
 
-      setSelectedKey(k);
+      // Mapeo de teclas a índices de círculos
+      const circleKeyMap = {
+        "1": 0, "2": 1, "3": 2, "4": 3, "5": 4,
+        "6": 5, "7": 6, "8": 7, "9": 8, "0": 9,
+        "q": 10, "w": 11, "y": 12, "r": 13, "t": 14,
+      };
+
+      // Detectar teclas para seleccionar círculos
+      if (key in circleKeyMap) {
+        setSelectedCircleIndex(circleKeyMap[key]);
+        e.preventDefault();
+        return;
+      }
+
+      // Detectar letras A-H para seleccionar color
+      const k = key.toUpperCase();
+      const valid = colorsForCurrentTest.some((c) => c.key === k);
+      if (valid) {
+        setSelectedKey(k);
+        e.preventDefault();
+      }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [colorsForCurrentTest]);
 
   const referenceImage = useMemo(
     () => generateReferenceImage(qIndex, currentSeed, 15),
@@ -228,7 +301,7 @@ export default function UsabilityTest() {
             <h2 className="utTitle utTitle--italic">Paleta</h2>
 
             <div className="utPaletteGrid" role="group" aria-label="Paleta de colores (A-H)">
-              {COLORS.map((c) => {
+              {colorsForCurrentTest.map((c) => {
                 const active = selectedKey === c.key;
 
                 return (
@@ -250,7 +323,7 @@ export default function UsabilityTest() {
             </div>
 
             <div className="utHintSmall">
-              Selecciona con teclado: <strong>A</strong>–<strong>H</strong>
+              Selecciona círculo: <strong>1-9, 0, q, w, y, r, t</strong> | Color: <strong>A–H</strong>
             </div>
           </section>
 
@@ -263,6 +336,8 @@ export default function UsabilityTest() {
               seed={currentSeed}
               circlesCount={15}
               selectedColor={selected.hex}
+              selectedCircleIndex={selectedCircleIndex}
+              onSelectCircle={setSelectedCircleIndex}
               onProgress={setProgress}
             />
           </section>
