@@ -58,10 +58,12 @@
 
 .utGrid{
   display:grid;
-  grid-template-columns: var(--paletteW) 1fr var(--refW);
+  grid-template-columns: var(--paletteW) var(--boardSize) var(--boardSize);
   gap: var(--gap);
   align-items:start;
+  justify-content: center; 
 }
+
 
 .utPanel{
   background: transparent;

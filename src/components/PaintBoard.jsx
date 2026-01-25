@@ -5,7 +5,7 @@ function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
     a |= 0;
-    a = (a + 0x6D2B79F5) | 0;
+    a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -43,11 +43,31 @@ function generateCircles({ count, seed }) {
   return circles;
 }
 
-/** Mapeo de índices a teclas */
+/**
+ * ✅ Teclas para hasta 20 círculos
+ * (solo letras, para no chocar con 0–9 que usas en la paleta)
+ */
 const CIRCLE_KEYS = [
-  "1", "2", "3", "4", "5",
-  "6", "7", "8", "9", "0",
-  "q", "w", "y", "r", "t"
+  "q",
+  "w",
+  "e",
+  "r",
+  "t",
+  "a",
+  "s",
+  "d",
+  "f",
+  "g",
+  "z",
+  "x",
+  "c",
+  "v",
+  "b",
+  "n",
+  "m",
+  "h",
+  "j",
+  "k",
 ];
 
 function getKeyForCircleIndex(idx) {
@@ -57,29 +77,50 @@ function getKeyForCircleIndex(idx) {
 export default function PaintBoard({
   seed = 1,
   circlesCount = 15,
+  circleScale = 1, // ✅ nuevo prop (ej: 1.3)
   selectedColor,
+  selectedColorKey,
   selectedCircleIndex,
   onProgress,
+  onAnswersChange,
 }) {
   const circles = useMemo(
     () => generateCircles({ count: circlesCount, seed }),
-    [circlesCount, seed]
+    [circlesCount, seed],
   );
 
   const [fills, setFills] = useState({});
 
+  // ✅ radio escalable
+  const BASE_R = 12;
+  const R = BASE_R * (circleScale ?? 1);
+
   /** Pintar un círculo por ID */
-  const paint = (id) => {
-    if (!selectedColor) return;
+  const paint = (idx) => {
+    if (!selectedColor || !selectedColorKey) return;
+    const id = circles[idx]?.id;
+    if (!id) return;
 
     setFills((prev) => {
-      if (prev[id] === selectedColor) return prev;
+      const prevKey = prev[id]?.key;
+      if (prevKey === selectedColorKey) return prev;
 
-      const next = { ...prev, [id]: selectedColor };
+      const next = {
+        ...prev,
+        [id]: { hex: selectedColor, key: selectedColorKey, idx },
+      };
+
       onProgress?.({
         painted: Object.keys(next).length,
         total: circlesCount,
       });
+
+      const answers = {};
+      Object.values(next).forEach((v) => {
+        answers[v.idx] = v.key;
+      });
+      onAnswersChange?.(answers);
+
       return next;
     });
   };
@@ -98,24 +139,21 @@ export default function PaintBoard({
       return;
     }
 
-    paint(circles[selectedCircleIndex].id);
-  }, [selectedCircleIndex, selectedColor, circles]);
+    paint(selectedCircleIndex);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCircleIndex, selectedColor, selectedColorKey, circles]);
+
+  useEffect(() => {
+    setFills({});
+    onProgress?.({ painted: 0, total: circlesCount });
+    onAnswersChange?.({}); // ✅
+  }, [seed, circlesCount, onProgress, onAnswersChange]);
 
   return (
     <div className="cbBoard">
-      <svg
-        className="cbSvg"
-        viewBox="0 0 360 360"
-        preserveAspectRatio="none"
-      >
-        <rect
-          x="4"
-          y="4"
-          width="352"
-          height="352"
-          rx="10"
-          fill="white"
-        />
+      <svg className="cbSvg" viewBox="0 0 360 360" preserveAspectRatio="none">
+        <rect x="4" y="4" width="352" height="352" rx="10" fill="white" />
 
         {circles.map((c, idx) => {
           const cx = c.x * 360;
@@ -125,33 +163,33 @@ export default function PaintBoard({
           const displayKey = getKeyForCircleIndex(idx);
 
           return (
-          <g key={c.id}>
-            <circle
-              cx={cx}
-              cy={cy}
-              r={12}
-              fill={fills[c.id] ?? "#FFFFFF"}
-              stroke={isSelected ? "#000000" : "#2a2a2a"}
-              strokeWidth={isSelected ? "3" : "2"}
-              className="cbCircle"
-              onClick={() => paint(c.id)}
-            />
+            <g key={c.id}>
+              <circle
+                cx={cx}
+                cy={cy}
+                r={R}
+                fill={fills[c.id]?.hex ?? "#FFFFFF"} // ✅ FIX: ahora sí es un color
+                stroke={isSelected ? "#000000" : "#2a2a2a"}
+                strokeWidth={isSelected ? "3" : "2"}
+                className="cbCircle"
+                onClick={() => paint(idx)}
+              />
 
-            <text
-              x={cx}
-              y={cy}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize="9"
-              fontWeight="bold"
-              fill={isFilled ? "#FFFFFF" : "#2a2a2a"}
-              pointerEvents="none"
-              style={{ userSelect: "none" }}
-            >
-              {displayKey}
-            </text>
-          </g>
-        );
+              <text
+                x={cx}
+                y={cy}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={Math.max(9, 9 * (circleScale ?? 1))} // ✅ ajusta texto
+                fontWeight="bold"
+                fill={isFilled ? "#FFFFFF" : "#2a2a2a"}
+                pointerEvents="none"
+                style={{ userSelect: "none" }}
+              >
+                {displayKey}
+              </text>
+            </g>
+          );
         })}
       </svg>
     </div>

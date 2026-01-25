@@ -1,0 +1,143 @@
+.resMain{
+  padding: var(--gap) var(--padX) calc(var(--gap) * 1.2);
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+}
+
+.resCard{
+  width: min(950px, 100%);
+  background: #fff2c9;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 0.22rem 0 rgba(0,0,0,0.12);
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+}
+
+.resHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 1rem;
+}
+
+.resTitle{
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 900;
+}
+
+.resBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  font-weight: 900;
+  background:#fff;
+}
+
+.badge-pass{ background: rgba(34,197,94,0.18); }
+.badge-warn{ background: rgba(245,158,11,0.22); }
+.badge-inconclusive{ background: rgba(148,163,184,0.28); }
+
+.resRules{
+  margin-top: 0.75rem;
+  display:flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  opacity: 0.9;
+}
+
+.resMuted{ opacity: 0.85; margin: 0.75rem 0 0; }
+
+.resSummary{
+  margin-top: 1rem;
+  display:flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resMetric{
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  min-width: 240px;
+}
+
+.resMetricLabel{ font-weight: 800; opacity: 0.85; }
+.resMetricValue{ font-weight: 900; font-size: 2rem; margin-top: 0.25rem; }
+
+.resStats{
+  display:grid;
+  gap: 0.35rem;
+  font-size: 1rem;
+}
+
+.resDivider{
+  height: 1px;
+  background: rgba(0,0,0,0.15);
+  margin: 1rem 0;
+}
+
+.resSubTitle{ margin: 0 0 0.6rem 0; font-weight: 900; }
+
+.resTableWrap{ width: 100%; overflow:auto; }
+
+.resTable{
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.resTable th,
+.resTable td{
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  padding: 0.6rem 0.7rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.resTable th{ font-weight: 900; }
+
+.resStatusCell{
+  font-weight: 900;
+}
+
+/* ✅ Colores por fila */
+.row-pass{
+  background: rgba(34,197,94,0.12);
+}
+.row-warn{
+  background: rgba(245,158,11,0.16);
+}
+.row-inconclusive{
+  background: rgba(148,163,184,0.20);
+}
+
+.resNote{
+  margin-top: 0.9rem;
+  opacity: 0.9;
+}
+
+.resActions{
+  margin-top: 1rem;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.resBtn{
+  background:#fff;
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  padding: 0.8rem 1.1rem;
+  font-weight: 800;
+  cursor:pointer;
+  font-size: 1rem;
+}

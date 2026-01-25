@@ -2,139 +2,50 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PaintBoard from "../components/PaintBoard";
 import "../styles/usability-test.css";
+import COLORS from "../json/colors.json";
 
-// Configuración de colores por tipo de daltonismo
-const DEUTERANOMALY_COLORS = [
-  { key: "A", hex: "#D62E1C" },  // Rojo oscuro (confunde con marrón)
-  { key: "B", hex: "#D97706" },  // Naranja-marrón (confunde con rojo)
-  { key: "C", hex: "#84CC16" },  // Verde-amarillo (confunde)
-  { key: "D", hex: "#228B22" },  // Verde oscuro (confunde con marrón)
-  { key: "E", hex: "#1E40AF" },  // Azul (distinguible)
-  { key: "F", hex: "#64748B" },  // Gris azulado (neutral)
-  { key: "G", hex: "#4B5563" },  // Gris oscuro (neutral)
-  { key: "H", hex: "#2563EB" },  // Azul claro (distinguible)
-];
+const SEEDS = [1024, 2048, 3072, 4096, 5120, 6144];
 
-const PROTANOMALY_PROTANOPIA_COLORS = [
-  { key: "A", hex: "#DC2626" },  // Rojo puro (rojo > marrón)
-  { key: "B", hex: "#EA580C" },  // Naranja (muy difícil de distinguir del rojo)
-  { key: "C", hex: "#6B7280" },  // Gris oscuro (neutral)
-  { key: "D", hex: "#22C55E" },  // Verde (confunde con amarillo)
-  { key: "E", hex: "#3B82F6" },  // Azul (distinguible)
-  { key: "F", hex: "#FBBF24" },  // Amarillo (confunde con rojo)
-  { key: "G", hex: "#EF4444" },  // Rojo claro (similar al naranja)
-  { key: "H", hex: "#60A5FA" },  // Azul claro (distinguible)
-];
-
-const TRITANOMALY_COLORS = [
-  { key: "A", hex: "#2563EB" },  // Azul (confunde con rojo)
-  { key: "B", hex: "#3B82F6" },  // Azul claro (confunde con amarillo)
-  { key: "C", hex: "#FCD34D" },  // Amarillo (confunde con rosa/magenta)
-  { key: "D", hex: "#EC4899" },  // Rosa (confunde con azul)
-  { key: "E", hex: "#8B5CF6" },  // Morado (confunde con amarillo)
-  { key: "F", hex: "#EF4444" },  // Rojo (confunde con azul)
-  { key: "G", hex: "#64748B" },  // Gris (neutral)
-  { key: "H", hex: "#10B981" },  // Verde (confunde con gris)
-];
-
-const TRITANOPIA_COLORS = [
-  { key: "A", hex: "#1E3A8A" },  // Azul oscuro (confunde con rojo)
-  { key: "B", hex: "#0369A1" },  // Azul cyan (similar)
-  { key: "C", hex: "#F59E0B" },  // Amarillo oscuro (confunde con rosa)
-  { key: "D", hex: "#D946EF" },  // Magenta (confunde con azul)
-  { key: "E", hex: "#7C3AED" },  // Morado (confunde con rojo)
-  { key: "F", hex: "#EF4444" },  // Rojo (confunde con azul)
-  { key: "G", hex: "#94A3B8" },  // Gris (neutral)
-  { key: "H", hex: "#14B8A6" },  // Verde agua (similar)
-];
-
-const SEEDS = [1024, 2048, 3072, 4096, 5120];
-
-// Configuración de pruebas con colores específicos para cada tipo de daltonismo
 const TESTS = [
-  {
-    id: 0,
-    name: "Pregunta 1: Deuteranomalía",
-    type: "deuteranomaly",
-    colors: [
-      { x: 0.22, y: 0.22, hex: "#D62E1C" },  // Rojo oscuro
-      { x: 0.5, y: 0.22, hex: "#D97706" },   // Naranja-marrón
-      { x: 0.78, y: 0.22, hex: "#84CC16" },  // Verde-amarillo
-      { x: 0.22, y: 0.5, hex: "#228B22" },   // Verde oscuro
-      { x: 0.5, y: 0.5, hex: "#1E40AF" },    // Azul
-      { x: 0.78, y: 0.5, hex: "#64748B" },   // Gris azulado
-      { x: 0.36, y: 0.78, hex: "#4B5563" },  // Gris oscuro
-      { x: 0.64, y: 0.78, hex: "#2563EB" },  // Azul claro
-    ]
-  },
+  { id: 0, name: "Test 1: Rojo–Verde", jsonKey: "TEST1_RED_GREEN_COLORS" },
   {
     id: 1,
-    name: "Pregunta 2: Protanomalía, Protanopia y Deuteranopia",
-    type: "protanomaly_protanopia_deuteranopia",
-    colors: [
-      { x: 0.22, y: 0.22, hex: "#DC2626" },  // Rojo puro
-      { x: 0.5, y: 0.22, hex: "#EA580C" },   // Naranja
-      { x: 0.78, y: 0.22, hex: "#6B7280" },  // Gris oscuro
-      { x: 0.22, y: 0.5, hex: "#22C55E" },   // Verde
-      { x: 0.5, y: 0.5, hex: "#3B82F6" },    // Azul
-      { x: 0.78, y: 0.5, hex: "#FBBF24" },   // Amarillo
-      { x: 0.36, y: 0.78, hex: "#EF4444" },  // Rojo claro
-      { x: 0.64, y: 0.78, hex: "#60A5FA" },  // Azul claro
-    ]
+    name: "Test 2: Tritanomalía (Azul–Verde)",
+    jsonKey: "TEST2_TRITANOMALY_BLUE_GREEN_COLORS",
   },
   {
     id: 2,
-    name: "Pregunta 3: Tritanomalía",
-    type: "tritanomaly",
-    colors: [
-      { x: 0.22, y: 0.22, hex: "#2563EB" },  // Azul
-      { x: 0.5, y: 0.22, hex: "#3B82F6" },   // Azul claro
-      { x: 0.78, y: 0.22, hex: "#FCD34D" },  // Amarillo
-      { x: 0.22, y: 0.5, hex: "#EC4899" },   // Rosa
-      { x: 0.5, y: 0.5, hex: "#8B5CF6" },    // Morado
-      { x: 0.78, y: 0.5, hex: "#EF4444" },   // Rojo
-      { x: 0.36, y: 0.78, hex: "#64748B" },  // Gris
-      { x: 0.64, y: 0.78, hex: "#10B981" },  // Verde
-    ]
+    name: "Test 3: Tritanomalía (Amarillo–Rojo)",
+    jsonKey: "TEST3_TRITANOMALY_YELLOW_RED_COLORS",
   },
   {
     id: 3,
-    name: "Pregunta 4: Tritanopia",
-    type: "tritanopia",
-    colors: [
-      { x: 0.22, y: 0.22, hex: "#1E3A8A" },  // Azul oscuro
-      { x: 0.5, y: 0.22, hex: "#0369A1" },   // Azul cyan
-      { x: 0.78, y: 0.22, hex: "#F59E0B" },  // Amarillo oscuro
-      { x: 0.22, y: 0.5, hex: "#D946EF" },   // Magenta
-      { x: 0.5, y: 0.5, hex: "#7C3AED" },    // Morado
-      { x: 0.78, y: 0.5, hex: "#EF4444" },   // Rojo
-      { x: 0.36, y: 0.78, hex: "#94A3B8" },  // Gris
-      { x: 0.64, y: 0.78, hex: "#14B8A6" },  // Verde agua
-    ]
+    name: "Test 4: Tritanopia (Azul–Verde)",
+    jsonKey: "TEST4_TRITANOPIA_BLUE_GREEN_COLORS",
   },
   {
     id: 4,
-    name: "Pregunta 5: Confirmación Final",
-    type: "confirmation",
-    colors: [
-      { x: 0.22, y: 0.22, hex: "#DC2626" },  // Rojo
-      { x: 0.5, y: 0.22, hex: "#EA580C" },   // Naranja
-      { x: 0.78, y: 0.22, hex: "#22C55E" },  // Verde
-      { x: 0.22, y: 0.5, hex: "#3B82F6" },   // Azul
-      { x: 0.5, y: 0.5, hex: "#64748B" },    // Gris
-      { x: 0.78, y: 0.5, hex: "#8B5CF6" },   // Morado
-      { x: 0.36, y: 0.78, hex: "#EC4899" },  // Rosa
-      { x: 0.64, y: 0.78, hex: "#FCD34D" },  // Amarillo
-    ]
-  }
+    name: "Test 5: Tritanopia (Violeta–Rojo)",
+    jsonKey: "TEST5_TRITANOPIA_VIOLET_RED_COLORS",
+  },
+  {
+    id: 5,
+    name: "Test 6: Tritanopia (Amarillo–Rosado)",
+    jsonKey: "TEST6_TRITANOPIA_YELLOW_PINK_COLORS",
+  },
 ];
 
-/** PRNG reproducible por seed (Mulberry32) - igual que PaintBoard */
+const CIRCLES_COUNT = 20;
+const CIRCLE_SCALE = 1.3;
+const REF_BASE_RADIUS = 12;
+const REF_RADIUS = Math.round(REF_BASE_RADIUS * CIRCLE_SCALE);
+
+/** PRNG reproducible por seed (Mulberry32) */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
     a |= 0;
-    a = (a + 0x6D2B79F5) | 0;
+    a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -172,18 +83,44 @@ function generateCircles({ count, seed }) {
   return circles;
 }
 
-// Generar imagen de referencia con colores pintados en las mismas posiciones
-function generateReferenceImage(testId, seed, circlesCount) {
-  const test = TESTS[testId];
+/** ✅ Respuesta correcta por índice de círculo -> colorKey */
+function buildAnswerKey(palette, seed, circlesCount) {
+  const circles = generateCircles({ count: circlesCount, seed }); // mismo orden/seed
+  const expected = {};
+  for (let i = 0; i < circles.length; i++) {
+    expected[String(i)] = palette[i % palette.length].key; // "0"-"9"
+  }
+  return { seed, circlesCount, expected };
+}
+
+function gradeTest(expected, answers, circlesCount) {
+  let correct = 0, wrong = 0, unanswered = 0;
+
+  for (let i = 0; i < circlesCount; i++) {
+    const exp = expected[String(i)];
+    const ans = answers[String(i)];
+    if (ans == null) unanswered++;
+    else if (ans === exp) correct++;
+    else wrong++;
+  }
+
+  const attempted = correct + wrong;
+  const accuracyAttempted = attempted > 0 ? (correct / attempted) * 100 : 0;
+  const accuracyTotal = circlesCount > 0 ? (correct / circlesCount) * 100 : 0;
+
+  return { correct, wrong, unanswered, attempted, accuracyAttempted, accuracyTotal };
+}
+
+/** ✅ Referencia SVG determinística */
+function generateReferenceImage(palette, seed, circlesCount) {
   const circles = generateCircles({ count: circlesCount, seed });
-  
-  // Mapear cada círculo del tablero a un color de la prueba
-  let circlesHtml = circles.map((c, idx) => {
-    const colorHex = test.colors[idx % test.colors.length].hex;
-    return `
-      <circle cx="${c.x * 360}" cy="${c.y * 360}" r="12" fill="${colorHex}" stroke="#2a2a2a" stroke-width="2"/>
-    `;
-  }).join('');
+
+  const circlesHtml = circles
+    .map((c, idx) => {
+      const colorHex = palette[idx % palette.length].hex;
+      return `<circle cx="${c.x * 360}" cy="${c.y * 360}" r="${REF_RADIUS}" fill="${colorHex}" stroke="#2a2a2a" stroke-width="2"/>`;
+    })
+    .join("");
 
   const svg = `
     <svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -191,87 +128,145 @@ function generateReferenceImage(testId, seed, circlesCount) {
       ${circlesHtml}
     </svg>
   `;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+
+  const encoded = btoa(unescape(encodeURIComponent(svg)));
+  return `data:image/svg+xml;base64,${encoded}`;
 }
 
 export default function UsabilityTest() {
   const nav = useNavigate();
 
   const totalQuestions = TESTS.length;
+
   const [qIndex, setQIndex] = useState(0);
-  const [selectedKey, setSelectedKey] = useState("A");
+  const [selectedKey, setSelectedKey] = useState("0");
   const [selectedCircleIndex, setSelectedCircleIndex] = useState(null);
-  const [progress, setProgress] = useState({ painted: 0, total: 15 });
+  const [progress, setProgress] = useState({
+    painted: 0,
+    total: CIRCLES_COUNT,
+  });
+
+  const [answersByCircle, setAnswersByCircle] = useState({});
+  const [results, setResults] = useState([]);
 
   const currentTest = TESTS[qIndex];
-  const currentSeed = SEEDS[qIndex];
+  const currentSeed = SEEDS[qIndex] ?? SEEDS[0];
 
-  // Obtener los colores según el tipo de prueba
-  const getColorsForTest = () => {
-    switch (TESTS[qIndex].type) {
-      case "deuteranomaly":
-        return DEUTERANOMALY_COLORS;
-      case "protanomaly_protanopia_deuteranopia":
-        return PROTANOMALY_PROTANOPIA_COLORS;
-      case "tritanomaly":
-        return TRITANOMALY_COLORS;
-      case "tritanopia":
-        return TRITANOPIA_COLORS;
-      default:
-        return PROTANOMALY_PROTANOPIA_COLORS;
-    }
-  };
+  const colorsForCurrentTest = useMemo(() => {
+    const palette = COLORS?.[currentTest.jsonKey];
+    return Array.isArray(palette) && palette.length ? palette : [];
+  }, [currentTest.jsonKey]);
 
-  const colorsForCurrentTest = getColorsForTest();
-
-  const selected = useMemo(
-    () => colorsForCurrentTest.find((c) => c.key === selectedKey) ?? colorsForCurrentTest[0],
-    [selectedKey, qIndex]
-  );
+  const selected = useMemo(() => {
+    return (
+      colorsForCurrentTest.find((c) => c.key === selectedKey) ??
+      colorsForCurrentTest[0] ?? { key: "0", hex: "#000000" }
+    );
+  }, [selectedKey, colorsForCurrentTest]);
 
   const questionText = useMemo(
     () => `Pregunta ${qIndex + 1}/${totalQuestions}`,
-    [qIndex]
+    [qIndex, totalQuestions],
   );
 
-  const canNext = true;
+ const answerKey = useMemo(() => {
+  if (!colorsForCurrentTest.length) return null;
+  return buildAnswerKey(colorsForCurrentTest, currentSeed, CIRCLES_COUNT);
+}, [colorsForCurrentTest, currentSeed]);
 
-  const goNext = () => {
-    if (qIndex < totalQuestions - 1) {
-      setQIndex((p) => p + 1);
-      setSelectedKey("A");
-      setProgress({ painted: 0, total: 15 });
-    } else {
-      nav("/");
-    }
+  const referenceImage = useMemo(() => {
+    if (!colorsForCurrentTest.length) return "";
+    return generateReferenceImage(
+      colorsForCurrentTest,
+      currentSeed,
+      CIRCLES_COUNT,
+    );
+  }, [colorsForCurrentTest, currentSeed]);
+
+  const finalizeCurrentTest = () => {
+    if (!answerKey) return null;
+
+    const grade = gradeTest(answerKey.expected, answersByCircle, CIRCLES_COUNT);
+
+    return {
+      testId: currentTest.id,
+      testName: currentTest.name,
+      seed: currentSeed,
+      circlesCount: CIRCLES_COUNT,
+      ...grade,
+    };
   };
+
+const goNext = () => {
+  // resumen del test actual
+  const summary = answerKey
+    ? {
+        testId: currentTest.id,
+        testName: currentTest.name,
+        seed: currentSeed,
+        circlesCount: CIRCLES_COUNT,
+        ...gradeTest(answerKey.expected, answersByCircle, CIRCLES_COUNT),
+      }
+    : null;
+
+  const nextResults = summary ? [...results, summary] : results;
+  if (summary) setResults(nextResults);
+
+  if (qIndex < totalQuestions - 1) {
+    setQIndex((p) => p + 1);
+    setSelectedKey("0");
+    setSelectedCircleIndex(null);
+    setProgress({ painted: 0, total: CIRCLES_COUNT });
+    setAnswersByCircle({});
+  } else {
+
+    nav("/results", { state: { results: nextResults } });
+  }
+};
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      const key = e.key || "";
+      const raw = e.key || "";
+      const key = raw.toLowerCase();
       const tag = (e.target?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea") return;
 
-      // Mapeo de teclas a índices de círculos
       const circleKeyMap = {
-        "1": 0, "2": 1, "3": 2, "4": 3, "5": 4,
-        "6": 5, "7": 6, "8": 7, "9": 8, "0": 9,
-        "q": 10, "w": 11, "y": 12, "r": 13, "t": 14,
+        q: 0,
+        w: 1,
+        e: 2,
+        r: 3,
+        t: 4,
+        a: 5,
+        s: 6,
+        d: 7,
+        f: 8,
+        g: 9,
+        z: 10,
+        x: 11,
+        c: 12,
+        v: 13,
+        b: 14,
+        n: 15,
+        m: 16,
+        h: 17,
+        j: 18,
+        k: 19,
       };
 
-      // Detectar teclas para seleccionar círculos
       if (key in circleKeyMap) {
         setSelectedCircleIndex(circleKeyMap[key]);
         e.preventDefault();
         return;
       }
 
-      // Detectar letras A-H para seleccionar color
-      const k = key.toUpperCase();
-      const valid = colorsForCurrentTest.some((c) => c.key === k);
-      if (valid) {
-        setSelectedKey(k);
-        e.preventDefault();
+      // color 0-9
+      if (/^[0-9]$/.test(raw)) {
+        const valid = colorsForCurrentTest.some((c) => c.key === raw);
+        if (valid) {
+          setSelectedKey(raw);
+          e.preventDefault();
+        }
       }
     };
 
@@ -279,16 +274,10 @@ export default function UsabilityTest() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [colorsForCurrentTest]);
 
-  const referenceImage = useMemo(
-    () => generateReferenceImage(qIndex, currentSeed, 15),
-    [qIndex, currentSeed]
-  );
-
   return (
     <div className="utWrap">
       <header className="utTopbar">
         <h1 className="utBrand">COLORQUIZZ</h1>
-
         <button className="utExit" type="button" onClick={() => nav("/")}>
           Salir
         </button>
@@ -300,10 +289,13 @@ export default function UsabilityTest() {
           <section className="utPanel utPanel--palette">
             <h2 className="utTitle utTitle--italic">Paleta</h2>
 
-            <div className="utPaletteGrid" role="group" aria-label="Paleta de colores (A-H)">
+            <div
+              className="utPaletteGrid"
+              role="group"
+              aria-label="Paleta de colores (0-9)"
+            >
               {colorsForCurrentTest.map((c) => {
                 const active = selectedKey === c.key;
-
                 return (
                   <button
                     key={c.key}
@@ -313,7 +305,10 @@ export default function UsabilityTest() {
                     aria-pressed={active}
                     title={`Color ${c.key}`}
                   >
-                    <span className="utSwatchColor" style={{ background: c.hex }} />
+                    <span
+                      className="utSwatchColor"
+                      style={{ background: c.hex }}
+                    />
                     <span className="utSwatchText">
                       <span className="utSwatchKey">{c.key}</span>
                     </span>
@@ -323,8 +318,28 @@ export default function UsabilityTest() {
             </div>
 
             <div className="utHintSmall">
-              Selecciona círculo: <strong>1-9, 0, q, w, y, r, t</strong> | Color: <strong>A–H</strong>
+              Selecciona círculo:{" "}
+              <strong>Q W E R T A S D F G Z X C V B N M H J K</strong> | Color:{" "}
+              <strong>0–9</strong>
             </div>
+
+            <div className="utHintSmall">
+              Progreso: {progress.painted}/{progress.total}
+            </div>
+          </section>
+
+          {/* Referencia */}
+          <section className="utPanel utPanel--ref">
+            <h2 className="utTitle utTitle--italic">Referencia</h2>
+            {referenceImage ? (
+              <img
+                src={referenceImage}
+                alt={`Referencia: ${currentTest.name}`}
+                className="referenceImage"
+              />
+            ) : (
+              <p style={{ padding: 12 }}>No se pudo cargar la referencia.</p>
+            )}
           </section>
 
           {/* Dibujo */}
@@ -334,21 +349,13 @@ export default function UsabilityTest() {
             <PaintBoard
               key={currentSeed}
               seed={currentSeed}
-              circlesCount={15}
+              circlesCount={CIRCLES_COUNT}
+              circleScale={CIRCLE_SCALE}
               selectedColor={selected.hex}
+              selectedColorKey={selected.key}
               selectedCircleIndex={selectedCircleIndex}
-              onSelectCircle={setSelectedCircleIndex}
               onProgress={setProgress}
-            />
-          </section>
-
-          {/* Referencia */}
-          <section className="utPanel utPanel--ref">
-            <h2 className="utTitle utTitle--italic">Referencia</h2>
-            <img
-              src={referenceImage}
-              alt={`Referencia: ${currentTest.name}`}
-              className="referenceImage"
+              onAnswersChange={setAnswersByCircle}
             />
           </section>
         </div>
@@ -356,7 +363,7 @@ export default function UsabilityTest() {
         <footer className="utFooter">
           <div className="utQuestion">{questionText}</div>
 
-          <button className="utNext" type="button" disabled={!canNext} onClick={goNext}>
+          <button className="utNext" type="button" onClick={goNext}>
             {qIndex < totalQuestions - 1 ? "Siguiente  >" : "Finalizar  >"}
           </button>
         </footer>

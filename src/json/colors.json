@@ -1,0 +1,74 @@
+{
+  "TEST1_RED_GREEN_COLORS": [
+    { "key": "0", "hex": "#AA3226" },
+    { "key": "1", "hex": "#5F8A1B" },
+    { "key": "2", "hex": "#CC3B2A" },
+    { "key": "3", "hex": "#83A92F" },
+    { "key": "4", "hex": "#476A2A" },
+    { "key": "5", "hex": "#D8572E" },
+    { "key": "6", "hex": "#8FB84A" },
+    { "key": "7", "hex": "#943017" },
+    { "key": "8", "hex": "#E86A4E" },
+    { "key": "9", "hex": "#A8C46A" }
+  ],
+  "TEST2_TRITANOMALY_BLUE_GREEN_COLORS": [
+    { "key": "0", "hex": "#1C4AD4" },
+    { "key": "1", "hex": "#0A9A8C" },
+    { "key": "2", "hex": "#16C2B0" },
+    { "key": "3", "hex": "#2B6AF0" },
+    { "key": "4", "hex": "#193784" },
+    { "key": "5", "hex": "#0C7A72" },
+    { "key": "6", "hex": "#448AF8" },
+    { "key": "7", "hex": "#12C48A" },
+    { "key": "8", "hex": "#34DDC9" },
+    { "key": "9", "hex": "#07506E" }
+  ],
+  "TEST3_TRITANOMALY_YELLOW_RED_COLORS": [
+    { "key": "0", "hex": "#F6A616" },
+    { "key": "1", "hex": "#D8222A" },
+    { "key": "2", "hex": "#F04E4E" },
+    { "key": "3", "hex": "#FCC43A" },
+    { "key": "4", "hex": "#B5161E" },
+    { "key": "5", "hex": "#EAB918" },
+    { "key": "6", "hex": "#DA7F14" },
+    { "key": "7", "hex": "#E21A54" },
+    { "key": "8", "hex": "#FCD760" },
+    { "key": "9", "hex": "#FA7B28" }
+  ],
+  "TEST4_TRITANOPIA_BLUE_GREEN_COLORS": [
+    { "key": "0", "hex": "#1D47AD" },
+    { "key": "1", "hex": "#18A596" },
+    { "key": "2", "hex": "#28B0A4" },
+    { "key": "3", "hex": "#3074B7" },
+    { "key": "4", "hex": "#143873" },
+    { "key": "5", "hex": "#128179" },
+    { "key": "6", "hex": "#5690DD" },
+    { "key": "7", "hex": "#3AC9B9" },
+    { "key": "8", "hex": "#44BFA9" },
+    { "key": "9", "hex": "#0D3F5C" }
+  ],
+  "TEST5_TRITANOPIA_VIOLET_RED_COLORS": [
+    { "key": "0", "hex": "#7E3BF2" },
+    { "key": "1", "hex": "#D8232E" },
+    { "key": "2", "hex": "#E0194E" },
+    { "key": "3", "hex": "#9062F8" },
+    { "key": "4", "hex": "#B61821" },
+    { "key": "5", "hex": "#6E23DE" },
+    { "key": "6", "hex": "#AE5DF8" },
+    { "key": "7", "hex": "#C01043" },
+    { "key": "8", "hex": "#9838ED" },
+    { "key": "9", "hex": "#F54A67" }
+  ],
+  "TEST6_TRITANOPIA_YELLOW_PINK_COLORS": [
+    { "key": "0", "hex": "#FEF29C" },
+    { "key": "1", "hex": "#FBD6EA" },
+    { "key": "2", "hex": "#FAB2D8" },
+    { "key": "3", "hex": "#FDE99B" },
+    { "key": "4", "hex": "#FDADB7" },
+    { "key": "5", "hex": "#FCD75E" },
+    { "key": "6", "hex": "#FFF9CF" },
+    { "key": "7", "hex": "#F47DBB" },
+    { "key": "8", "hex": "#FCEBBC" },
+    { "key": "9", "hex": "#FFD8EC" }
+  ]
+}

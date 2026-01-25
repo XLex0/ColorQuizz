@@ -1,14 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 
 export default function ImagePaintBoard({
-  referenceImage,
   blankImage,
   selectedColor,
   brushSize = 8,
   onAnalysisReady,
 }) {
   const canvasRef = useRef(null);
-  const [ctx, setCtx] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -26,7 +24,6 @@ export default function ImagePaintBoard({
       canvas.width = img.width;
       canvas.height = img.height;
       context.drawImage(img, 0, 0);
-      setCtx(context);
       setImageLoaded(true);
     };
 
@@ -34,7 +31,7 @@ export default function ImagePaintBoard({
   }, [blankImage]);
 
   const startDrawing = (e) => {
-    if (!imageLoaded || !ctx) return;
+    if (!imageLoaded) return;
     setIsDrawing(true);
     draw(e);
   };
@@ -44,9 +41,10 @@ export default function ImagePaintBoard({
   };
 
   const draw = (e) => {
-    if (!isDrawing || !ctx) return;
+    if (!isDrawing) return;
 
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -58,9 +56,10 @@ export default function ImagePaintBoard({
   };
 
   const resetCanvas = () => {
-    if (!ctx || !blankImage) return;
+    if (!blankImage) return;
 
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
     const img = new Image();
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -70,9 +69,8 @@ export default function ImagePaintBoard({
   };
 
   const analyzeImage = () => {
-    if (!ctx) return;
-
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
