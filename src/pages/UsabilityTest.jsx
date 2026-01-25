@@ -83,7 +83,7 @@ function generateCircles({ count, seed }) {
   return circles;
 }
 
-/** ✅ Respuesta correcta por índice de círculo -> colorKey */
+
 function buildAnswerKey(palette, seed, circlesCount) {
   const circles = generateCircles({ count: circlesCount, seed }); // mismo orden/seed
   const expected = {};
@@ -111,7 +111,6 @@ function gradeTest(expected, answers, circlesCount) {
   return { correct, wrong, unanswered, attempted, accuracyAttempted, accuracyTotal };
 }
 
-/** ✅ Referencia SVG determinística */
 function generateReferenceImage(palette, seed, circlesCount) {
   const circles = generateCircles({ count: circlesCount, seed });
 
@@ -183,7 +182,7 @@ export default function UsabilityTest() {
     );
   }, [colorsForCurrentTest, currentSeed]);
 
-  const finalizeCurrentTest = () => {
+ {/*onst finalizeCurrentTest = () => {
     if (!answerKey) return null;
 
     const grade = gradeTest(answerKey.expected, answersByCircle, CIRCLES_COUNT);
@@ -195,7 +194,7 @@ export default function UsabilityTest() {
       circlesCount: CIRCLES_COUNT,
       ...grade,
     };
-  };
+  };*/}
 
 const goNext = () => {
   // resumen del test actual
