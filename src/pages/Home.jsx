@@ -125,10 +125,13 @@ export default function Home() {
             ref={instructionsRef}
             data-section="instructions"
             className="screen screen-instructions"
+            tabIndex={0}
+            role="region"
+            aria-labelledby="instructions-title"
           >
             <header className="instructionsHeader">
               <div className="helpIcon" aria-hidden="true">?</div>
-              <h2 className="instructionsTitle">Instrucciones</h2>
+              <h2 id="instructions-title" className="instructionsTitle">Instrucciones</h2>
             </header>
 
             <div className="instructionsLayout">
@@ -167,8 +170,15 @@ export default function Home() {
           </section>
 
           {/* PANTALLA 3 */}
-          <section ref={profileRef} data-section="profile" className="screen screen-profile">
-            <h3 className="sectionTitle profileTitle">Perfil Visual</h3>
+          <section
+            ref={profileRef}
+            data-section="profile"
+            className="screen screen-profile"
+            tabIndex={0}
+            role="region"
+            aria-labelledby="profile-title"
+          >
+            <h3 id="profile-title" className="sectionTitle profileTitle">Perfil Visual</h3>
 
             <div className="profileStack">
               <article className="profileCard">
@@ -233,8 +243,11 @@ export default function Home() {
             ref={testimonialsRef}
             data-section="testimonials"
             className="screen screen-testimonials"
+            tabIndex={0}
+            role="region"
+            aria-labelledby="testimonials-title"
           >
-            <h3 className="sectionTitle testimonialsTitle">Testimonios</h3>
+            <h3 id="testimonials-title" className="sectionTitle testimonialsTitle">Testimonios</h3>
 
             <div className="testimonialsStack">
               <article className="testimonialCard">

@@ -183,6 +183,43 @@ body{
   z-index: 9999;
 }
 
+/* =========================
+   ACCESSIBILITY: focus + hover helpers
+   ========================= */
+/* Visible focus for keyboard users (uses :focus-visible when available) */
+:focus-visible {
+  outline: 3px solid #0d6efd; /* blue focus ring */
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Apply a gentler focus style to common interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  box-shadow: 0 0 0 4px rgba(13,110,253,0.12);
+}
+
+/* Improve hover/focus affordance for pointer users as well */
+button:hover,
+button:focus,
+.toplink:hover,
+.toplink:focus,
+.gearBtn:hover,
+.gearBtn:focus {
+  transform: translateY(-2px) scale(1.02);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; }
+}
+
 
 /* =========================
    SCROLL + SNAP

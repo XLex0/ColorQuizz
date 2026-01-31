@@ -274,7 +274,7 @@ const goNext = () => {
   }, [colorsForCurrentTest]);
 
   return (
-    <div className="utWrap">
+    <div className="utWrap" tabIndex={0}>
       <header className="utTopbar">
         <h1 className="utBrand">COLORQUIZZ</h1>
         <button className="utExit" type="button" onClick={() => nav("/")}>

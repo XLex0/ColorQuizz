@@ -38,9 +38,17 @@
 }
 
 .testPage__exit:hover {
-  background: #ee5a52;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  background: #e5433f;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 24px rgba(229, 67, 63, 0.34);
+}
+
+.testPage__exit:focus,
+.testPage__exit:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 4px;
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(13,110,253,0.18);
 }
 
 .testPage__main {
@@ -137,8 +145,16 @@
 }
 
 .colorSelector__btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform: scale(1.18);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.30);
+}
+
+/* Focus for the color selector (keyboard) */
+.colorSelector__btn:focus,
+.colorSelector__btn:focus-visible {
+  transform: scale(1.14);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.28);
+  outline: 4px solid rgba(13,110,253,0.22);
 }
 
 .colorSelector__btn.active {
@@ -174,9 +190,18 @@
 }
 
 .imagePaintBoard__btn:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: #4a57c8;
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 22px rgba(74, 87, 200, 0.34);
+}
+
+/* Focus styles for keyboard users */
+.imagePaintBoard__btn:focus,
+.imagePaintBoard__btn:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 4px;
+  transform: scale(1.03);
+  box-shadow: 0 10px 28px rgba(13,110,253,0.16);
 }
 
 .imagePaintBoard__btn--primary {
