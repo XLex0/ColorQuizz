@@ -5,8 +5,8 @@ import palette from "../assets/images/palette.png";
 import { useNavigate } from "react-router-dom";
 import "../styles/global.css";
 
-
-const DEFAULTS = { contrast: 100, brightness: 100 };
+// ✅ Agregamos textScale
+const DEFAULTS = { contrast: 100, brightness: 100, textScale: 100 };
 
 export default function Home() {
   const nav = useNavigate();
@@ -19,22 +19,25 @@ export default function Home() {
   const [openSettings, setOpenSettings] = useState(false);
   const [activeTab, setActiveTab] = useState(null);
 
+  // ✅ Cargamos settings y “completamos” defaults si faltan keys
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem("settings");
-    return saved ? JSON.parse(saved) : DEFAULTS;
+    const parsed = saved ? JSON.parse(saved) : {};
+    return { ...DEFAULTS, ...parsed }; // <-- clave para que cuadre
   });
 
   useEffect(() => {
     localStorage.setItem("settings", JSON.stringify(settings));
   }, [settings]);
 
-  // ✅ esto vuelve al comportamiento anterior: filtros por porcentaje
+  // ✅ Incluimos --textScale
   const styleVars = useMemo(
     () => ({
       "--contrast": `${settings.contrast}%`,
       "--brightness": `${settings.brightness}%`,
+      "--textScale": `${settings.textScale ?? 100}%`,
     }),
-    [settings.contrast, settings.brightness] // ✅ importante
+    [settings.contrast, settings.brightness, settings.textScale]
   );
 
   const reset = () => setSettings(DEFAULTS);
@@ -80,25 +83,28 @@ export default function Home() {
 
   return (
     <div className="app">
+      {/* ✅ AppContent recibe variables incluyendo textScale */}
       <div className="appContent" style={styleVars}>
+        <a className="skip-link" href="#main-content">
+          Saltar al contenido principal
+        </a>
+
         <Navbar onOpenSettings={() => setOpenSettings(true)} />
 
-        <main className="page">
-
-          {/* PANTALLA 1: HERO + TABS */}
+        <main id="main-content" className="page">
           <section ref={homeRef} data-section="home" className="screen screen-home">
             <div className="hero">
               <div className="heroBox">
-                <p className="heroQ">¿Tienes daltonismo?</p>
-                <h2 className="heroTitle">HACER PRUEBA</h2>
+                <h2 className="heroQ">¿Tienes daltonismo?</h2>
+                <h1 className="heroTitle">HACER PRUEBA</h1>
+
                 <button className="primaryBtn" onClick={() => nav("/test")}>
                   COMENZAR
                 </button>
-
               </div>
             </div>
 
-            <div className="tabs">
+            <div className="tabs" role="navigation" aria-label="Secciones de la página">
               <button
                 className={`tab ${activeTab === "instructions" ? "active" : ""}`}
                 onClick={() => scrollTo("instructions")}
@@ -131,7 +137,9 @@ export default function Home() {
           >
             <header className="instructionsHeader">
               <div className="helpIcon" aria-hidden="true">?</div>
-              <h2 id="instructions-title" className="instructionsTitle">Instrucciones</h2>
+              <h2 id="instructions-title" className="instructionsTitle">
+                Instrucciones
+              </h2>
             </header>
 
             <div className="instructionsLayout">
@@ -178,11 +186,13 @@ export default function Home() {
             role="region"
             aria-labelledby="profile-title"
           >
-            <h3 id="profile-title" className="sectionTitle profileTitle">Perfil Visual</h3>
+            <h2 id="profile-title" className="sectionTitle profileTitle">
+              Perfil Visual
+            </h2>
 
             <div className="profileStack">
               <article className="profileCard">
-                <h4 className="profileCardTitle">¿Qué es el daltonismo?</h4>
+                <h3 className="profileCardTitle">¿Qué es el daltonismo?</h3>
                 <p className="profileText">
                   Si usted tiene daltonismo (deficiencia en la visión de los colores),
                   significa que ve los colores de manera diferente a la mayoría de las
@@ -192,7 +202,7 @@ export default function Home() {
               </article>
 
               <article className="profileCard">
-                <h4 className="profileCardTitle">¿Corro riesgo de presentar daltonismo?</h4>
+                <h3 className="profileCardTitle">¿Corro riesgo de presentar daltonismo?</h3>
                 <p className="profileText">
                   Los hombres corren un riesgo mucho mayor de presentar daltonismo que las
                   mujeres. También es más probable que usted sea daltónico si:
@@ -208,8 +218,7 @@ export default function Home() {
               </article>
 
               <article className="profileCard">
-                <h4 className="profileCardTitle">Tipos de daltonismo</h4>
-
+                <h3 className="profileCardTitle">Tipos de daltonismo</h3>
                 <p className="profileText">El daltonismo rojo-verde es el más común e incluye:</p>
                 <ul className="profileBullets">
                   <li><strong>Deuteranomalía:</strong> el verde se ve rojizo (leve).</li>
@@ -247,28 +256,36 @@ export default function Home() {
             role="region"
             aria-labelledby="testimonials-title"
           >
-            <h3 id="testimonials-title" className="sectionTitle testimonialsTitle">Testimonios</h3>
+            <h2 id="testimonials-title" className="sectionTitle testimonialsTitle">
+              Testimonios
+            </h2>
 
             <div className="testimonialsStack">
               <article className="testimonialCard">
-                <h4 className="testimonialPerson">Valeria P.</h4>
-                <div className="stars" aria-label="Calificación 5 de 5">★★★★★</div>
+                <h3 className="testimonialPerson">Valeria P.</h3>
+                <span className="stars" role="img" aria-label="Calificación 5 de 5">
+                  ★★★★★
+                </span>
                 <p className="testimonialText">
                   “Muy útil para entender mi visión. Me ayudó a identificar patrones y a sentirme más segura usando el modo accesible.”
                 </p>
               </article>
 
               <article className="testimonialCard">
-                <h4 className="testimonialPerson">Diego M.</h4>
-                <div className="stars" aria-label="Calificación 4 de 5">★★★★☆</div>
+                <h3 className="testimonialPerson">Diego M.</h3>
+                <span className="stars" role="img" aria-label="Calificación 4 de 5">
+                  ★★★★☆
+                </span>
                 <p className="testimonialText">
                   “La interfaz es clara y rápida. Me gustó que el feedback sea inmediato y que todo esté explicado sin abrumar.”
                 </p>
               </article>
 
               <article className="testimonialCard">
-                <h4 className="testimonialPerson">Camila R.</h4>
-                <div className="stars" aria-label="Calificación 5 de 5">★★★★★</div>
+                <h3 className="testimonialPerson">Camila R.</h3>
+                <span className="stars" role="img" aria-label="Calificación 5 de 5">
+                  ★★★★★
+                </span>
                 <p className="testimonialText">
                   “Me gustó el modo accesible. Las etiquetas y símbolos hacen que sea disfrutable incluso si confundo algunos colores.”
                 </p>

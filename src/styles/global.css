@@ -740,3 +740,95 @@ button:focus,
   line-height: 1.35;
   color: var(--text-1);
 }
+
+.skip-link{
+  position:absolute;
+  left:-999px;
+  top:0;
+  padding:12px 16px;
+  background:#fff;
+  color:#000;
+  z-index:9999;
+  border:2px solid #000;
+  border-radius:10px;
+}
+.skip-link:focus{
+  left:12px;
+  top:12px;
+}
+
+/* =========================
+   MEJOR ADAPTABILIDAD (móvil + orientación)
+   ========================= */
+
+/* 1) Usa unidades de viewport modernas (evita cortes por barra del navegador) */
+.page{
+  height: auto;
+  min-height: 100vh;
+  min-height: 100svh; /* Safari/Chrome móvil */
+  overflow-y: auto;
+}
+
+/* 2) Pantallas: que no obliguen 100vh cuando el contenido es más alto */
+.screen{
+  min-height: 100vh;
+  min-height: 100svh;
+  height: auto;
+}
+
+/* 3) Hero: evita calc(100vh - 120px) en móviles */
+.hero{
+  min-height: auto;
+  padding-top: clamp(16px, 4vw, 40px);
+  padding-bottom: clamp(10px, 2vw, 20px);
+}
+
+/* 4) Scroll-snap solo en pantallas grandes (en móvil suele ser incómodo y genera bugs) */
+@media (max-width: 900px){
+  .page{
+    scroll-snap-type: none;
+  }
+  .screen{
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
+/* 5) Navbar sticky: asegura que el contenido no quede debajo en móviles */
+.topbar{
+  height: auto; /* por si el contenido crece */
+  min-height: 64px;
+}
+.screen{
+  scroll-margin-top: 96px; /* ya lo tienes, ok */
+}
+
+/* 6) Tabs: que bajen a columnas si no entran */
+@media (max-width: 520px){
+  .tabs{
+    flex-direction: column;
+  }
+  .tab{
+    width: 100%;
+  }
+}
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app, .appContent, .page, .screen {
+  max-width: 100%;
+  overflow-x: clip; /* mejor que hidden en navegadores modernos */
+}
+
+/*
+*{
+  line-height: 1.5 !important;
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+}
+p{
+  margin-bottom: 2em !important;
+}*/

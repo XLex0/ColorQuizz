@@ -150,9 +150,22 @@ export default function PaintBoard({
     onAnswersChange?.({}); // ✅
   }, [seed, circlesCount, onProgress, onAnswersChange]);
 
-  return (
+   return (
     <div className="cbBoard">
-      <svg className="cbSvg" viewBox="0 0 360 360" preserveAspectRatio="none">
+      <svg
+        className="cbSvg"
+        viewBox="0 0 360 360"
+        preserveAspectRatio="none"
+        role="img"
+        aria-labelledby="paintboard-title paintboard-desc"
+        focusable="false"
+      >
+        <title id="paintboard-title">Tablero para pintar</title>
+        <desc id="paintboard-desc">
+          Tablero con {circlesCount} círculos. Selecciona un color y luego un círculo para pintarlo.
+          Cada círculo muestra una letra de ayuda para selección rápida por teclado.
+        </desc>
+
         <rect x="4" y="4" width="352" height="352" rx="10" fill="white" />
 
         {circles.map((c, idx) => {
@@ -168,7 +181,7 @@ export default function PaintBoard({
                 cx={cx}
                 cy={cy}
                 r={R}
-                fill={fills[c.id]?.hex ?? "#FFFFFF"} // ✅ FIX: ahora sí es un color
+                fill={fills[c.id]?.hex ?? "#FFFFFF"}
                 stroke={isSelected ? "#000000" : "#2a2a2a"}
                 strokeWidth={isSelected ? "3" : "2"}
                 className="cbCircle"
@@ -180,7 +193,7 @@ export default function PaintBoard({
                 y={cy}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize={Math.max(9, 9 * (circleScale ?? 1))} // ✅ ajusta texto
+                fontSize={Math.max(9, 9 * (circleScale ?? 1))}
                 fontWeight="bold"
                 fill={isFilled ? "#FFFFFF" : "#2a2a2a"}
                 pointerEvents="none"

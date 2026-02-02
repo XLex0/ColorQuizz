@@ -8,31 +8,11 @@ const SEEDS = [1024, 2048, 3072, 4096, 5120, 6144];
 
 const TESTS = [
   { id: 0, name: "Test 1: Rojo–Verde", jsonKey: "TEST1_RED_GREEN_COLORS" },
-  {
-    id: 1,
-    name: "Test 2: Tritanomalía (Azul–Verde)",
-    jsonKey: "TEST2_TRITANOMALY_BLUE_GREEN_COLORS",
-  },
-  {
-    id: 2,
-    name: "Test 3: Tritanomalía (Amarillo–Rojo)",
-    jsonKey: "TEST3_TRITANOMALY_YELLOW_RED_COLORS",
-  },
-  {
-    id: 3,
-    name: "Test 4: Tritanopia (Azul–Verde)",
-    jsonKey: "TEST4_TRITANOPIA_BLUE_GREEN_COLORS",
-  },
-  {
-    id: 4,
-    name: "Test 5: Tritanopia (Violeta–Rojo)",
-    jsonKey: "TEST5_TRITANOPIA_VIOLET_RED_COLORS",
-  },
-  {
-    id: 5,
-    name: "Test 6: Tritanopia (Amarillo–Rosado)",
-    jsonKey: "TEST6_TRITANOPIA_YELLOW_PINK_COLORS",
-  },
+  { id: 1, name: "Test 2: Tritanomalía (Azul–Verde)", jsonKey: "TEST2_TRITANOMALY_BLUE_GREEN_COLORS" },
+  { id: 2, name: "Test 3: Tritanomalía (Amarillo–Rojo)", jsonKey: "TEST3_TRITANOMALY_YELLOW_RED_COLORS" },
+  { id: 3, name: "Test 4: Tritanopia (Azul–Verde)", jsonKey: "TEST4_TRITANOPIA_BLUE_GREEN_COLORS" },
+  { id: 4, name: "Test 5: Tritanopia (Violeta–Rojo)", jsonKey: "TEST5_TRITANOPIA_VIOLET_RED_COLORS" },
+  { id: 5, name: "Test 6: Tritanopia (Amarillo–Rosado)", jsonKey: "TEST6_TRITANOPIA_YELLOW_PINK_COLORS" },
 ];
 
 const CIRCLES_COUNT = 20;
@@ -40,7 +20,6 @@ const CIRCLE_SCALE = 1.3;
 const REF_BASE_RADIUS = 12;
 const REF_RADIUS = Math.round(REF_BASE_RADIUS * CIRCLE_SCALE);
 
-/** PRNG reproducible por seed (Mulberry32) */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
@@ -83,12 +62,11 @@ function generateCircles({ count, seed }) {
   return circles;
 }
 
-
 function buildAnswerKey(palette, seed, circlesCount) {
-  const circles = generateCircles({ count: circlesCount, seed }); // mismo orden/seed
+  const circles = generateCircles({ count: circlesCount, seed });
   const expected = {};
   for (let i = 0; i < circles.length; i++) {
-    expected[String(i)] = palette[i % palette.length].key; // "0"-"9"
+    expected[String(i)] = palette[i % palette.length].key;
   }
   return { seed, circlesCount, expected };
 }
@@ -134,17 +112,12 @@ function generateReferenceImage(palette, seed, circlesCount) {
 
 export default function UsabilityTest() {
   const nav = useNavigate();
-
   const totalQuestions = TESTS.length;
 
   const [qIndex, setQIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState("0");
   const [selectedCircleIndex, setSelectedCircleIndex] = useState(null);
-  const [progress, setProgress] = useState({
-    painted: 0,
-    total: CIRCLES_COUNT,
-  });
-
+  const [progress, setProgress] = useState({ painted: 0, total: CIRCLES_COUNT });
   const [answersByCircle, setAnswersByCircle] = useState({});
   const [results, setResults] = useState([]);
 
@@ -165,63 +138,43 @@ export default function UsabilityTest() {
 
   const questionText = useMemo(
     () => `Pregunta ${qIndex + 1}/${totalQuestions}`,
-    [qIndex, totalQuestions],
+    [qIndex, totalQuestions]
   );
 
- const answerKey = useMemo(() => {
-  if (!colorsForCurrentTest.length) return null;
-  return buildAnswerKey(colorsForCurrentTest, currentSeed, CIRCLES_COUNT);
-}, [colorsForCurrentTest, currentSeed]);
+  const answerKey = useMemo(() => {
+    if (!colorsForCurrentTest.length) return null;
+    return buildAnswerKey(colorsForCurrentTest, currentSeed, CIRCLES_COUNT);
+  }, [colorsForCurrentTest, currentSeed]);
 
   const referenceImage = useMemo(() => {
     if (!colorsForCurrentTest.length) return "";
-    return generateReferenceImage(
-      colorsForCurrentTest,
-      currentSeed,
-      CIRCLES_COUNT,
-    );
+    return generateReferenceImage(colorsForCurrentTest, currentSeed, CIRCLES_COUNT);
   }, [colorsForCurrentTest, currentSeed]);
 
- {/*onst finalizeCurrentTest = () => {
-    if (!answerKey) return null;
+  const goNext = () => {
+    const summary = answerKey
+      ? {
+          testId: currentTest.id,
+          testName: currentTest.name,
+          seed: currentSeed,
+          circlesCount: CIRCLES_COUNT,
+          ...gradeTest(answerKey.expected, answersByCircle, CIRCLES_COUNT),
+        }
+      : null;
 
-    const grade = gradeTest(answerKey.expected, answersByCircle, CIRCLES_COUNT);
+    const nextResults = summary ? [...results, summary] : results;
+    if (summary) setResults(nextResults);
 
-    return {
-      testId: currentTest.id,
-      testName: currentTest.name,
-      seed: currentSeed,
-      circlesCount: CIRCLES_COUNT,
-      ...grade,
-    };
-  };*/}
-
-const goNext = () => {
-  // resumen del test actual
-  const summary = answerKey
-    ? {
-        testId: currentTest.id,
-        testName: currentTest.name,
-        seed: currentSeed,
-        circlesCount: CIRCLES_COUNT,
-        ...gradeTest(answerKey.expected, answersByCircle, CIRCLES_COUNT),
-      }
-    : null;
-
-  const nextResults = summary ? [...results, summary] : results;
-  if (summary) setResults(nextResults);
-
-  if (qIndex < totalQuestions - 1) {
-    setQIndex((p) => p + 1);
-    setSelectedKey("0");
-    setSelectedCircleIndex(null);
-    setProgress({ painted: 0, total: CIRCLES_COUNT });
-    setAnswersByCircle({});
-  } else {
-
-    nav("/results", { state: { results: nextResults } });
-  }
-};
+    if (qIndex < totalQuestions - 1) {
+      setQIndex((p) => p + 1);
+      setSelectedKey("0");
+      setSelectedCircleIndex(null);
+      setProgress({ painted: 0, total: CIRCLES_COUNT });
+      setAnswersByCircle({});
+    } else {
+      nav("/results", { state: { results: nextResults } });
+    }
+  };
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -231,26 +184,10 @@ const goNext = () => {
       if (tag === "input" || tag === "textarea") return;
 
       const circleKeyMap = {
-        q: 0,
-        w: 1,
-        e: 2,
-        r: 3,
-        t: 4,
-        a: 5,
-        s: 6,
-        d: 7,
-        f: 8,
-        g: 9,
-        z: 10,
-        x: 11,
-        c: 12,
-        v: 13,
-        b: 14,
-        n: 15,
-        m: 16,
-        h: 17,
-        j: 18,
-        k: 19,
+        q: 0, w: 1, e: 2, r: 3, t: 4,
+        a: 5, s: 6, d: 7, f: 8, g: 9,
+        z: 10, x: 11, c: 12, v: 13, b: 14,
+        n: 15, m: 16, h: 17, j: 18, k: 19,
       };
 
       if (key in circleKeyMap) {
@@ -259,7 +196,6 @@ const goNext = () => {
         return;
       }
 
-      // color 0-9
       if (/^[0-9]$/.test(raw)) {
         const valid = colorsForCurrentTest.some((c) => c.key === raw);
         if (valid) {
@@ -274,25 +210,34 @@ const goNext = () => {
   }, [colorsForCurrentTest]);
 
   return (
-    <div className="utWrap" tabIndex={0}>
+    <div className="utWrap">
+      {/* ✅ Skip link (2.4.1) */}
+      <a className="skip-link" href="#main-content">
+        Saltar al contenido principal
+      </a>
+
       <header className="utTopbar">
-        <h1 className="utBrand">COLORQUIZZ</h1>
-        <button className="utExit" type="button" onClick={() => nav("/")}>
-          Salir
-        </button>
+        {/* ✅ Branding ya no es H1 */}
+        <span className="utBrand">COLORQUIZZ</span>
+
+        {/* ✅ Nav landmark */}
+        <nav className="utNav" aria-label="Navegación">
+          <button className="utExit" type="button" onClick={() => nav("/")}>
+            Salir
+          </button>
+        </nav>
       </header>
 
-      <main className="utMain">
+      <main id="main-content" className="utMain">
+        {/* ✅ H1 real dentro del contenido */}
+        <h1 className="utPageTitle">Test de daltonismo</h1>
+
         <div className="utGrid">
           {/* Paleta */}
-          <section className="utPanel utPanel--palette">
-            <h2 className="utTitle utTitle--italic">Paleta</h2>
+          <section className="utPanel utPanel--palette" aria-labelledby="paleta-title">
+            <h2 id="paleta-title" className="utTitle utTitle--italic">Paleta</h2>
 
-            <div
-              className="utPaletteGrid"
-              role="group"
-              aria-label="Paleta de colores (0-9)"
-            >
+            <div className="utPaletteGrid" role="group" aria-label="Paleta de colores (0-9)">
               {colorsForCurrentTest.map((c) => {
                 const active = selectedKey === c.key;
                 return (
@@ -304,10 +249,7 @@ const goNext = () => {
                     aria-pressed={active}
                     title={`Color ${c.key}`}
                   >
-                    <span
-                      className="utSwatchColor"
-                      style={{ background: c.hex }}
-                    />
+                    <span className="utSwatchColor" style={{ background: c.hex }} />
                     <span className="utSwatchText">
                       <span className="utSwatchKey">{c.key}</span>
                     </span>
@@ -328,8 +270,8 @@ const goNext = () => {
           </section>
 
           {/* Referencia */}
-          <section className="utPanel utPanel--ref">
-            <h2 className="utTitle utTitle--italic">Referencia</h2>
+          <section className="utPanel utPanel--ref" aria-labelledby="ref-title">
+            <h2 id="ref-title" className="utTitle utTitle--italic">Referencia</h2>
             {referenceImage ? (
               <img
                 src={referenceImage}
@@ -342,8 +284,8 @@ const goNext = () => {
           </section>
 
           {/* Dibujo */}
-          <section className="utPanel utPanel--board">
-            <h2 className="utTitle utTitle--italic">Dibujo a pintar</h2>
+          <section className="utPanel utPanel--board" aria-labelledby="board-title">
+            <h2 id="board-title" className="utTitle utTitle--italic">Dibujo a pintar</h2>
 
             <PaintBoard
               key={currentSeed}
@@ -361,7 +303,6 @@ const goNext = () => {
 
         <footer className="utFooter">
           <div className="utQuestion">{questionText}</div>
-
           <button className="utNext" type="button" onClick={goNext}>
             {qIndex < totalQuestions - 1 ? "Siguiente  >" : "Finalizar  >"}
           </button>

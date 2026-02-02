@@ -6,11 +6,7 @@ function pct(n) {
   return Number.isFinite(n) ? n.toFixed(1) : "0.0";
 }
 
-// ✅ Reglas
-// Máx 3 errores en 20 => 17/20 = 85%
 const PASS_THRESHOLD = 85;
-
-// Si deja >= 6 en blanco (de 20), el resultado es poco confiable
 const INCONCLUSIVE_BLANKS = 6;
 
 function getRowStatus(r) {
@@ -50,10 +46,8 @@ export default function Results() {
   const overallAccuracy =
     totals.totalCircles > 0 ? (totals.correct / totals.totalCircles) * 100 : 0;
 
-  // ✅ Estado global (por promedio total)
   const overallStatus = (() => {
     if (!hasResults) return null;
-    // Si en total dejó muchos blancos, marcamos no concluyente
     if (totals.unanswered >= INCONCLUSIVE_BLANKS) {
       return { label: "No concluyente", cls: "badge-inconclusive" };
     }
@@ -64,18 +58,31 @@ export default function Results() {
   })();
 
   return (
-    <div className="utWrap" tabIndex={0}>
+    <div className="utWrap">
+      {/* ✅ WCAG 2.4.1 Bypass Blocks */}
+      <a className="skip-link" href="#main-content">
+        Saltar al contenido principal
+      </a>
+
       <header className="utTopbar">
-        <h1 className="utBrand">COLORQUIZZ</h1>
-        <button className="utExit" type="button" onClick={() => nav("/")}>
-          Salir
-        </button>
+        {/* ✅ Ya NO es H1 en header (evita alerta “H1 in header”) */}
+        <span className="utBrand">COLORQUIZZ</span>
+
+        {/* ✅ Nav landmark para que ARC no marque “No nav landmark” */}
+        <nav className="utNav" aria-label="Navegación">
+          <button className="utExit" type="button" onClick={() => nav("/")}>
+            Salir
+          </button>
+        </nav>
       </header>
 
-      <main className="resMain">
+      {/* ✅ id para el skip-link */}
+      <main id="main-content" className="resMain">
         <section className="resCard" aria-label="Resultados del test">
           <div className="resHeader">
-            <h2 className="resTitle">Resultados</h2>
+            {/* ✅ Este sí debe ser el H1 de la página */}
+            <h1 className="resTitle">Resultados</h1>
+
             {overallStatus && (
               <span className={`resBadge ${overallStatus.cls}`}>
                 {overallStatus.label}
@@ -122,9 +129,16 @@ export default function Results() {
 
               <div className="resDivider" />
 
-              <h3 className="resSubTitle">Detalle por test</h3>
+              {/* ✅ Como ya existe H1, este pasa a H2 */}
+              <h2 className="resSubTitle">Detalle por test</h2>
 
-              <div className="resTableWrap">
+              {/* ✅ Scroll accesible por teclado */}
+              <div
+                className="resTableWrap"
+                tabIndex={0}
+                role="region"
+                aria-label="Tabla de resultados por test (desplazable)"
+              >
                 <table className="resTable">
                   <thead>
                     <tr>
