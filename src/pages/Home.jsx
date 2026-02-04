@@ -274,55 +274,6 @@ export default function Home() {
     return () => window.removeEventListener("keydown", onInstructionsArrows, true);
   }, [instructionsRef]);
 
-  useEffect(() => {
-    // ---------- 3) Perfil: moverse entre los 3 contenedores (cards) con ↑ ↓ ----------
-    const root = profileRef.current;
-    if (!root) return;
-
-    const getCards = () =>
-      Array.from(root.querySelectorAll(".profileStack .profileCard"));
-
-    const focusFirstInCard = (card) => {
-      // Toma el primer elemento realmente enfocables dentro de la card
-      const focusables = getFocusable(card);
-      if (focusables.length > 0) focusables[0].focus();
-      else card.focus?.();
-    };
-
-    const onProfileArrows = (e) => {
-      const cards = getCards();
-      if (cards.length === 0) return;
-
-      // Solo si el foco está dentro de la sección Perfil
-      const insideProfile = root.contains(e.target);
-      if (!insideProfile) return;
-
-      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
-
-      // Evita que el handler global cambie de sección
-      e.preventDefault();
-      e.stopPropagation();
-
-      const active = document.activeElement;
-
-      // Card actual: la que contiene el foco
-      let idx = cards.findIndex((c) => c === active || c.contains(active));
-
-      if (idx === -1) {
-        // Si por alguna razón estás en el título de sección u otro elemento,
-        // saltamos a la primera card
-        focusFirstInCard(cards[0]);
-        return;
-      }
-
-      const dir = e.key === "ArrowDown" ? 1 : -1;
-      const nextIdx = Math.max(0, Math.min(cards.length - 1, idx + dir));
-      focusFirstInCard(cards[nextIdx]);
-    };
-
-    window.addEventListener("keydown", onProfileArrows, true);
-    return () => window.removeEventListener("keydown", onProfileArrows, true);
-  }, [profileRef]);
 
     // ✅ ESC: salir de navegación interna / limpiar selección
   useEffect(() => {
