@@ -112,7 +112,13 @@ export default function Home() {
       profile: profileRef.current,
       testimonials: testimonialsRef.current,
     };
-    map[section]?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const el = map[section];
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    setTimeout(() => el.focus({ preventScroll: true }), 350);
   };
 
   const scrollToTop = () => scrollTo("home");
@@ -184,6 +190,7 @@ export default function Home() {
                 src={palette}
                 alt="Rueda de colores"
                 draggable="false"
+                tabIndex={0}
               />
 
               <div className="instructionsCard" tabIndex={0} aria-label="Instrucciones detalladas del Test de Daltonismo">
@@ -315,7 +322,7 @@ export default function Home() {
             role="region"
             aria-labelledby="testimonials-title"
           >
-              <h2 id="testimonials-title" className="sectionTitle testimonialsTitle" tabIndex={0}>
+            <h2 id="testimonials-title" className="sectionTitle testimonialsTitle" tabIndex={0}>
               Testimonios
             </h2>
 
@@ -372,4 +379,4 @@ export default function Home() {
   );
 }
 
- 
+
