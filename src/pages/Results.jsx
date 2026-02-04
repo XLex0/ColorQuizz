@@ -15,12 +15,24 @@ function getRowStatus(r) {
   const acc = r.accuracyTotal ?? 0;
 
   if (total > 0 && blanks >= INCONCLUSIVE_BLANKS) {
-    return { label: "No concluyente", cls: "row-inconclusive" };
+    return { 
+      label: "No concluyente", 
+      cls: "row-inconclusive",
+      description: "Demasiadas respuestas sin completar. Se requiere más información para evaluar correctamente."
+    };
   }
   if (acc >= PASS_THRESHOLD) {
-    return { label: "OK", cls: "row-pass" };
+    return { 
+      label: "Visión normal", 
+      cls: "row-pass",
+      description: "Excelente desempeño. Los resultados sugieren visión cromática normal."
+    };
   }
-  return { label: "Atención", cls: "row-warn" };
+  return { 
+    label: "Posible deficiencia", 
+    cls: "row-warn",
+    description: "Bajo desempeño detectado. Consulta con un oftalmólogo para confirmación."
+  };
 }
 
 export default function Results() {
@@ -49,12 +61,24 @@ export default function Results() {
   const overallStatus = (() => {
     if (!hasResults) return null;
     if (totals.unanswered >= INCONCLUSIVE_BLANKS) {
-      return { label: "No concluyente", cls: "badge-inconclusive" };
+      return { 
+        label: "No concluyente", 
+        cls: "badge-inconclusive",
+        description: "Resultados generales no concluyentes. Se necesita completar más respuestas."
+      };
     }
     if (overallAccuracy >= PASS_THRESHOLD) {
-      return { label: "OK", cls: "badge-pass" };
+      return { 
+        label: "Visión normal", 
+        cls: "badge-pass",
+        description: "Excelente desempeño general. Tu visión cromática parece ser normal."
+      };
     }
-    return { label: "Atención", cls: "badge-warn" };
+    return { 
+      label: "Posible deficiencia", 
+      cls: "badge-warn",
+      description: "Bajo desempeño general. Se recomienda consulta con un oftalmólogo."
+    };
   })();
 
   return (
@@ -81,16 +105,23 @@ export default function Results() {
         <section className="resCard" aria-label="Resultados del test">
           <div className="resHeader">
             {/* ✅ Este sí debe ser el H1 de la página */}
-            <h1 className="resTitle">Resultados</h1>
+            <h1 className="resTitle" tabIndex={0}>Resultados</h1>
 
             {overallStatus && (
-              <span className={`resBadge ${overallStatus.cls}`}>
+              <span 
+                className={`resBadge ${overallStatus.cls}`}
+                tabIndex={0}
+                role="status"
+                aria-live="polite"
+                aria-label={`Estado general: ${overallStatus.label}. ${overallStatus.description}`}
+              >
                 {overallStatus.label}
               </span>
             )}
           </div>
 
-          <div className="resRules">
+          <div className="resRules" tabIndex={0} role="region" aria-labelledby="rules-title">
+            <h3 id="rules-title" className="sr-only">Criterios de evaluación</h3>
             <div>
               <strong>Umbral (máx 3 errores):</strong> {PASS_THRESHOLD}%
             </div>
@@ -105,24 +136,26 @@ export default function Results() {
             </p>
           ) : (
             <>
-              <div className="resSummary">
-                <div className="resMetric">
+              <div className="resSummary" role="region" aria-labelledby="summary-title">
+                <h3 id="summary-title" className="sr-only">Resumen de precisión</h3>
+                <div className="resMetric" tabIndex={0}>
                   <div className="resMetricLabel">Precisión total</div>
-                  <div className="resMetricValue">{pct(overallAccuracy)}%</div>
+                  <div className="resMetricValue" aria-live="polite">{pct(overallAccuracy)}%</div>
                 </div>
 
-                <div className="resStats">
+                <div className="resStats" tabIndex={0} role="region" aria-labelledby="stats-title">
+                  <h4 id="stats-title" className="sr-only">Estadísticas detalladas</h4>
                   <div>
-                    <strong>Aciertos:</strong> {totals.correct}
+                    <strong>Aciertos:</strong> <span aria-label={`${totals.correct} aciertos`}>{totals.correct}</span>
                   </div>
                   <div>
-                    <strong>Errores:</strong> {totals.wrong}
+                    <strong>Errores:</strong> <span aria-label={`${totals.wrong} errores`}>{totals.wrong}</span>
                   </div>
                   <div>
-                    <strong>Sin responder:</strong> {totals.unanswered}
+                    <strong>Sin responder:</strong> <span aria-label={`${totals.unanswered} sin responder`}>{totals.unanswered}</span>
                   </div>
                   <div>
-                    <strong>Total:</strong> {totals.totalCircles}
+                    <strong>Total:</strong> <span aria-label={`${totals.totalCircles} círculos totales`}>{totals.totalCircles}</span>
                   </div>
                 </div>
               </div>
@@ -130,7 +163,7 @@ export default function Results() {
               <div className="resDivider" />
 
               {/* ✅ Como ya existe H1, este pasa a H2 */}
-              <h2 className="resSubTitle">Detalle por test</h2>
+              <h2 className="resSubTitle" tabIndex={0}>Detalle por test</h2>
 
               {/* ✅ Scroll accesible por teclado */}
               <div
@@ -139,28 +172,34 @@ export default function Results() {
                 role="region"
                 aria-label="Tabla de resultados por test (desplazable)"
               >
-                <table className="resTable">
+                <table className="resTable" role="table" aria-label="Detalle de resultados de cada test">
                   <thead>
                     <tr>
-                      <th>Test</th>
-                      <th>Aciertos</th>
-                      <th>Errores</th>
-                      <th>Vacíos</th>
-                      <th>Precisión</th>
-                      <th>Estado</th>
+                      <th scope="col">Test</th>
+                      <th scope="col">Aciertos</th>
+                      <th scope="col">Errores</th>
+                      <th scope="col">Vacíos</th>
+                      <th scope="col">Precisión</th>
+                      <th scope="col">Estado</th>
                     </tr>
                   </thead>
                   <tbody>
                     {results.map((r) => {
                       const st = getRowStatus(r);
                       return (
-                        <tr key={r.testId} className={st.cls}>
-                          <td>{r.testName}</td>
-                          <td>{r.correct}</td>
-                          <td>{r.wrong}</td>
-                          <td>{r.unanswered}</td>
-                          <td>{pct(r.accuracyTotal)}%</td>
-                          <td className="resStatusCell">{st.label}</td>
+                        <tr 
+                          key={r.testId} 
+                          className={st.cls}
+                          tabIndex={0}
+                          role="row"
+                          aria-label={`${r.testName}: ${st.label} - ${pct(r.accuracyTotal)}% precisión. ${st.description}`}
+                        >
+                          <td role="cell">{r.testName}</td>
+                          <td role="cell" aria-label={`Aciertos: ${r.correct}`}>{r.correct}</td>
+                          <td role="cell" aria-label={`Errores: ${r.wrong}`}>{r.wrong}</td>
+                          <td role="cell" aria-label={`Sin responder: ${r.unanswered}`}>{r.unanswered}</td>
+                          <td role="cell" aria-label={`Precisión: ${pct(r.accuracyTotal)}%`}>{pct(r.accuracyTotal)}%</td>
+                          <td className="resStatusCell" role="cell" aria-label={`Estado: ${st.label}. ${st.description}`}>{st.label}</td>
                         </tr>
                       );
                     })}
@@ -168,15 +207,22 @@ export default function Results() {
                 </table>
               </div>
 
-              <p className="resNote">
-                <strong>Nota:</strong> “Atención” solo indica que el desempeño fue
-                bajo en ese test. No es un diagnóstico.
+              <p className="resNote" tabIndex={0} role="note">
+                <strong>Nota importante:</strong> Este test es solo una herramienta orientativa. 
+                "Posible deficiencia" sugiere una evaluación médica profesional. 
+                Solo un oftalmólogo puede diagnosticar daltonismo.
               </p>
             </>
           )}
 
           <div className="resActions">
-            <button className="resBtn" type="button" onClick={() => nav("/")}>
+            <button 
+              className="resBtn" 
+              type="button" 
+              onClick={() => nav("/")}
+              tabIndex={0}
+              aria-label="Terminar y volver al inicio"
+            >
               Terminar
             </button>
           </div>

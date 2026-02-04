@@ -69,6 +69,42 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
+  // keyboard arrows navigation between page sections
+  useEffect(() => {
+    const sections = [
+      { id: "home", ref: homeRef },
+      { id: "instructions", ref: instructionsRef },
+      { id: "profile", ref: profileRef },
+      { id: "testimonials", ref: testimonialsRef },
+    ];
+
+    const onKey = (e) => {
+      const keysNext = ["ArrowDown", "ArrowRight"];
+      const keysPrev = ["ArrowUp", "ArrowLeft"];
+      if (![...keysNext, ...keysPrev].includes(e.key)) return;
+
+      const activeIndex = sections.findIndex((s) => {
+        const el = s.ref.current;
+        return el === document.activeElement || el?.contains(document.activeElement);
+      });
+
+      if (keysNext.includes(e.key)) {
+        e.preventDefault();
+        const next = sections[Math.min(sections.length - 1, (activeIndex === -1 ? 0 : activeIndex) + 1)];
+        next?.ref.current?.focus();
+      }
+
+      if (keysPrev.includes(e.key)) {
+        e.preventDefault();
+        const prev = sections[Math.max(0, (activeIndex === -1 ? sections.length - 1 : activeIndex) - 1)];
+        prev?.ref.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [homeRef, instructionsRef, profileRef, testimonialsRef]);
+
   const scrollTo = (section) => {
     const map = {
       home: homeRef.current,
@@ -92,11 +128,11 @@ export default function Home() {
         <Navbar onOpenSettings={() => setOpenSettings(true)} />
 
         <main id="main-content" className="page">
-          <section ref={homeRef} data-section="home" className="screen screen-home">
+          <section ref={homeRef} data-section="home" className="screen screen-home" tabIndex={0}>
             <div className="hero">
               <div className="heroBox">
-                <h2 className="heroQ">¿Tienes daltonismo?</h2>
-                <h1 className="heroTitle">HACER PRUEBA</h1>
+                <h2 className="heroQ" tabIndex={0}>¿Tienes daltonismo?</h2>
+                <h1 className="heroTitle" tabIndex={0}>HACER PRUEBA</h1>
 
                 <button className="primaryBtn" onClick={() => nav("/test")}>
                   COMENZAR
@@ -137,7 +173,7 @@ export default function Home() {
           >
             <header className="instructionsHeader">
               <div className="helpIcon" aria-hidden="true">?</div>
-              <h2 id="instructions-title" className="instructionsTitle">
+              <h2 id="instructions-title" className="instructionsTitle" tabIndex={0}>
                 Instrucciones
               </h2>
             </header>
@@ -150,23 +186,46 @@ export default function Home() {
                 draggable="false"
               />
 
-              <div className="instructionsCard">
+              <div className="instructionsCard" tabIndex={0} aria-label="Instrucciones detalladas del Test de Daltonismo">
                 <ol className="instructionsList">
-                  <li>
-                    Presiona <strong>“Comenzar”</strong> en la pantalla principal para iniciar el juego.
+                  <li tabIndex={0}>
+                    Presiona <strong>“Comenzar”</strong> para iniciar el test.
+                    El juego consta de <strong>6 rondas</strong>, cada una diseñada para evaluar un tipo diferente de daltonismo.
                   </li>
-                  <li>
-                    Debes <strong>identificar</strong> colores, símbolos o patrones según lo que se indique.
+
+                  <li tabIndex={0}>
+                    Observa la sección <strong>“Referencia”</strong>.
+                    Esta imagen te muestra cómo debería verse el dibujo correctamente pintado.
                   </li>
-                  <li>
-                    Si tienes <strong>daltonismo</strong>, activa el modo accesible para ver símbolos y etiquetas junto a los colores.
-                  </li>
-                  <li>
-                    Recibe <strong>retroalimentación</strong>:
+
+                  <li tabIndex={0}>
+                    Selecciona un color desde la <strong>Paleta de colores</strong>:
                     <ul>
-                      <li>Si <strong>aciertas</strong>, verás el ícono de éxito o escucharás un sonido.</li>
-                      <li>Si <strong>fallas</strong>, se mostrará un mensaje o un símbolo que lo indique.</li>
+                      <li>Puedes hacer clic con el <strong>mouse</strong> sobre el color.</li>
+                      <li>O usar el <strong>teclado</strong> con las teclas del <strong>0 al 9</strong>.</li>
                     </ul>
+                  </li>
+
+                  <li tabIndex={0}>
+                    Pinta el <strong>dibujo en blanco y negro</strong>:
+                    <ul>
+                      <li>Haz clic sobre los círculos para aplicar el color seleccionado.</li>
+                      <li>También puedes usar el <strong>teclado</strong> presionando la letra que aparece en cada círculo
+                        (<strong>Q W E R T A S D F G Z X C V B N M H J K</strong>).
+                      </li>
+                    </ul>
+                  </li>
+
+                  <li tabIndex={0}>
+                    Completa el dibujo siguiendo la referencia para avanzar a la siguiente ronda.
+                  </li>
+
+                  <li tabIndex={0}>
+                    Al finalizar las 6 rondas, se mostrarán tus <strong>resultados</strong> según tus aciertos.
+                  </li>
+
+                  <li tabIndex={0}>
+                    Este test es solo una <strong>herramienta orientativa</strong> y no reemplaza una evaluación médica profesional.
                   </li>
                 </ol>
               </div>
@@ -191,9 +250,9 @@ export default function Home() {
             </h2>
 
             <div className="profileStack">
-              <article className="profileCard">
-                <h3 className="profileCardTitle">¿Qué es el daltonismo?</h3>
-                <p className="profileText">
+              <article className="profileCard" tabIndex={0} aria-label="Qué es el daltonismo">
+                <h3 className="profileCardTitle" tabIndex={0}>¿Qué es el daltonismo?</h3>
+                <p className="profileText" tabIndex={0}>
                   Si usted tiene daltonismo (deficiencia en la visión de los colores),
                   significa que ve los colores de manera diferente a la mayoría de las
                   personas. El daltonismo casi siempre hace difícil notar la diferencia
@@ -201,9 +260,9 @@ export default function Home() {
                 </p>
               </article>
 
-              <article className="profileCard">
-                <h3 className="profileCardTitle">¿Corro riesgo de presentar daltonismo?</h3>
-                <p className="profileText">
+              <article className="profileCard" tabIndex={0} aria-label="Riesgos de daltonismo">
+                <h3 className="profileCardTitle" tabIndex={0}>¿Corro riesgo de presentar daltonismo?</h3>
+                <p className="profileText" tabIndex={0}>
                   Los hombres corren un riesgo mucho mayor de presentar daltonismo que las
                   mujeres. También es más probable que usted sea daltónico si:
                 </p>
@@ -217,16 +276,16 @@ export default function Home() {
                 </ul>
               </article>
 
-              <article className="profileCard">
-                <h3 className="profileCardTitle">Tipos de daltonismo</h3>
-                <p className="profileText">El daltonismo rojo-verde es el más común e incluye:</p>
+              <article className="profileCard" tabIndex={0} aria-label="Tipos de daltonismo">
+                <h3 className="profileCardTitle" tabIndex={0}>Tipos de daltonismo</h3>
+                <p className="profileText" tabIndex={0}>El daltonismo rojo-verde es el más común e incluye:</p>
                 <ul className="profileBullets">
                   <li><strong>Deuteranomalía:</strong> el verde se ve rojizo (leve).</li>
                   <li><strong>Protanomalía:</strong> el rojo se ve verdoso y menos brillante (leve).</li>
                   <li><strong>Protanopia y deuteranopia:</strong> no se distingue entre rojo y verde.</li>
                 </ul>
 
-                <p className="profileText">El daltonismo azul-amarillo es menos común e incluye:</p>
+                <p className="profileText" tabIndex={0}>El daltonismo azul-amarillo es menos común e incluye:</p>
                 <ul className="profileBullets">
                   <li><strong>Tritanomalía:</strong> difícil diferenciar azul-verde y amarillo-rojo.</li>
                   <li>
@@ -235,7 +294,7 @@ export default function Home() {
                   </li>
                 </ul>
 
-                <p className="profileText">
+                <p className="profileText" tabIndex={0}>
                   El daltonismo completo (monocromacia) es raro y hace que la persona no vea colores;
                   puede incluir visión poco clara y sensibilidad a la luz.
                 </p>
@@ -256,37 +315,37 @@ export default function Home() {
             role="region"
             aria-labelledby="testimonials-title"
           >
-            <h2 id="testimonials-title" className="sectionTitle testimonialsTitle">
+              <h2 id="testimonials-title" className="sectionTitle testimonialsTitle" tabIndex={0}>
               Testimonios
             </h2>
 
             <div className="testimonialsStack">
-              <article className="testimonialCard">
-                <h3 className="testimonialPerson">Valeria P.</h3>
+              <article className="testimonialCard" tabIndex={0} aria-label="Testimonio de Valeria P.">
+                <h3 className="testimonialPerson" tabIndex={0}>Valeria P.</h3>
                 <span className="stars" role="img" aria-label="Calificación 5 de 5">
                   ★★★★★
                 </span>
-                <p className="testimonialText">
+                <p className="testimonialText" tabIndex={0}>
                   “Muy útil para entender mi visión. Me ayudó a identificar patrones y a sentirme más segura usando el modo accesible.”
                 </p>
               </article>
 
-              <article className="testimonialCard">
-                <h3 className="testimonialPerson">Diego M.</h3>
+              <article className="testimonialCard" tabIndex={0} aria-label="Testimonio de Diego M.">
+                <h3 className="testimonialPerson" tabIndex={0}>Diego M.</h3>
                 <span className="stars" role="img" aria-label="Calificación 4 de 5">
                   ★★★★☆
                 </span>
-                <p className="testimonialText">
+                <p className="testimonialText" tabIndex={0}>
                   “La interfaz es clara y rápida. Me gustó que el feedback sea inmediato y que todo esté explicado sin abrumar.”
                 </p>
               </article>
 
-              <article className="testimonialCard">
-                <h3 className="testimonialPerson">Camila R.</h3>
+              <article className="testimonialCard" tabIndex={0} aria-label="Testimonio de Camila R.">
+                <h3 className="testimonialPerson" tabIndex={0}>Camila R.</h3>
                 <span className="stars" role="img" aria-label="Calificación 5 de 5">
                   ★★★★★
                 </span>
-                <p className="testimonialText">
+                <p className="testimonialText" tabIndex={0}>
                   “Me gustó el modo accesible. Las etiquetas y símbolos hacen que sea disfrutable incluso si confundo algunos colores.”
                 </p>
               </article>
@@ -312,3 +371,5 @@ export default function Home() {
     </div>
   );
 }
+
+ 

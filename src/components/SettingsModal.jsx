@@ -9,7 +9,34 @@ export default function SettingsModal({ value, onChange, onClose, onReset }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  useEffect(() => dialogRef.current?.focus(), []);
+  // Focus first focusable element in modal and trap Tab within modal
+  useEffect(() => {
+    const modal = dialogRef.current;
+    if (!modal) return;
+
+    const focusable = modal.querySelectorAll(
+      'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    const onKey = (e) => {
+      if (e.key === "Tab") {
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    modal.addEventListener("keydown", onKey);
+    return () => modal.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   return (
     <div className="overlay" onMouseDown={onClose} role="presentation">
@@ -17,13 +44,13 @@ export default function SettingsModal({ value, onChange, onClose, onReset }) {
         className="modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Ajustes"
+        aria-labelledby="settings-title"
         tabIndex={-1}
         ref={dialogRef}
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="modalHeader">
-          <h2>Ajustes</h2>
+          <h2 id="settings-title">Ajustes</h2>
           <button className="xBtn" onClick={onClose} aria-label="Cerrar">
             ✕
           </button>
