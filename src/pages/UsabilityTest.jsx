@@ -8,12 +8,58 @@ const SEEDS = [1024, 2048, 3072, 4096, 5120, 6144];
 
 const TESTS = [
   { id: 0, name: "Test 1: Rojo–Verde", jsonKey: "TEST1_RED_GREEN_COLORS" },
-  { id: 1, name: "Test 2: Tritanomalía (Azul–Verde)", jsonKey: "TEST2_TRITANOMALY_BLUE_GREEN_COLORS" },
-  { id: 2, name: "Test 3: Tritanomalía (Amarillo–Rojo)", jsonKey: "TEST3_TRITANOMALY_YELLOW_RED_COLORS" },
-  { id: 3, name: "Test 4: Tritanopia (Azul–Verde)", jsonKey: "TEST4_TRITANOPIA_BLUE_GREEN_COLORS" },
-  { id: 4, name: "Test 5: Tritanopia (Violeta–Rojo)", jsonKey: "TEST5_TRITANOPIA_VIOLET_RED_COLORS" },
-  { id: 5, name: "Test 6: Tritanopia (Amarillo–Rosado)", jsonKey: "TEST6_TRITANOPIA_YELLOW_PINK_COLORS" },
+  {
+    id: 1,
+    name: "Test 2: Tritanomalía (Azul–Verde)",
+    jsonKey: "TEST2_TRITANOMALY_BLUE_GREEN_COLORS",
+  },
+  {
+    id: 2,
+    name: "Test 3: Tritanomalía (Amarillo–Rojo)",
+    jsonKey: "TEST3_TRITANOMALY_YELLOW_RED_COLORS",
+  },
+  {
+    id: 3,
+    name: "Test 4: Tritanopia (Azul–Verde)",
+    jsonKey: "TEST4_TRITANOPIA_BLUE_GREEN_COLORS",
+  },
+  {
+    id: 4,
+    name: "Test 5: Tritanopia (Violeta–Rojo)",
+    jsonKey: "TEST5_TRITANOPIA_VIOLET_RED_COLORS",
+  },
+  {
+    id: 5,
+    name: "Test 6: Tritanopia (Amarillo–Rosado)",
+    jsonKey: "TEST6_TRITANOPIA_YELLOW_PINK_COLORS",
+  },
 ];
+const CIRCLE_KEYS = [
+  "q",
+  "w",
+  "e",
+  "r",
+  "t",
+  "a",
+  "s",
+  "d",
+  "f",
+  "g",
+  "z",
+  "x",
+  "c",
+  "v",
+  "b",
+  "n",
+  "m",
+  "h",
+  "j",
+  "k",
+];
+
+function getKeyForCircleIndex(idx) {
+  return CIRCLE_KEYS[idx] || "?";
+}
 
 const CIRCLES_COUNT = 20;
 const CIRCLE_SCALE = 1.3;
@@ -72,7 +118,9 @@ function buildAnswerKey(palette, seed, circlesCount) {
 }
 
 function gradeTest(expected, answers, circlesCount) {
-  let correct = 0, wrong = 0, unanswered = 0;
+  let correct = 0,
+    wrong = 0,
+    unanswered = 0;
 
   for (let i = 0; i < circlesCount; i++) {
     const exp = expected[String(i)];
@@ -86,7 +134,14 @@ function gradeTest(expected, answers, circlesCount) {
   const accuracyAttempted = attempted > 0 ? (correct / attempted) * 100 : 0;
   const accuracyTotal = circlesCount > 0 ? (correct / circlesCount) * 100 : 0;
 
-  return { correct, wrong, unanswered, attempted, accuracyAttempted, accuracyTotal };
+  return {
+    correct,
+    wrong,
+    unanswered,
+    attempted,
+    accuracyAttempted,
+    accuracyTotal,
+  };
 }
 
 function generateReferenceImage(palette, seed, circlesCount) {
@@ -95,13 +150,50 @@ function generateReferenceImage(palette, seed, circlesCount) {
   const circlesHtml = circles
     .map((c, idx) => {
       const colorHex = palette[idx % palette.length].hex;
-      return `<circle cx="${c.x * 360}" cy="${c.y * 360}" r="${REF_RADIUS}" fill="${colorHex}" stroke="#2a2a2a" stroke-width="2"/>`;
+      const cx = c.x * 360;
+      const cy = c.y * 360;
+      const key = CIRCLE_KEYS[idx] || "?";
+
+      const fontSize = Math.max(10, Math.round(9 * (CIRCLE_SCALE ?? 1)));
+
+      return `
+        <g>
+          <circle
+            cx="${cx}"
+            cy="${cy}"
+            r="${REF_RADIUS}"
+            fill="${colorHex}"
+            stroke="#2a2a2a"
+            stroke-width="2"
+          />
+
+          <text
+            x="${cx}"
+            y="${cy}"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            font-family="system-ui, Arial"
+            font-size="${fontSize}"
+            font-weight="700"
+            fill="#ffffff"
+            stroke="#000000"
+            stroke-width="0.8"
+            paint-order="stroke"
+          >
+            ${key}
+          </text>
+        </g>
+      `;
     })
     .join("");
 
   const svg = `
-    <svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <rect x="4" y="4" width="352" height="352" rx="10" fill="white"/>
+    <svg
+      viewBox="0 0 360 360"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+    >
+      <rect x="4" y="4" width="352" height="352" rx="10" fill="white" />
       ${circlesHtml}
     </svg>
   `;
@@ -117,7 +209,10 @@ export default function UsabilityTest() {
   const [qIndex, setQIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState("0");
   const [selectedCircleIndex, setSelectedCircleIndex] = useState(null);
-  const [progress, setProgress] = useState({ painted: 0, total: CIRCLES_COUNT });
+  const [progress, setProgress] = useState({
+    painted: 0,
+    total: CIRCLES_COUNT,
+  });
   const [answersByCircle, setAnswersByCircle] = useState({});
   const [results, setResults] = useState([]);
 
@@ -138,7 +233,7 @@ export default function UsabilityTest() {
 
   const questionText = useMemo(
     () => `Pregunta ${qIndex + 1}/${totalQuestions}`,
-    [qIndex, totalQuestions]
+    [qIndex, totalQuestions],
   );
 
   const answerKey = useMemo(() => {
@@ -148,7 +243,11 @@ export default function UsabilityTest() {
 
   const referenceImage = useMemo(() => {
     if (!colorsForCurrentTest.length) return "";
-    return generateReferenceImage(colorsForCurrentTest, currentSeed, CIRCLES_COUNT);
+    return generateReferenceImage(
+      colorsForCurrentTest,
+      currentSeed,
+      CIRCLES_COUNT,
+    );
   }, [colorsForCurrentTest, currentSeed]);
 
   const goNext = () => {
@@ -184,10 +283,26 @@ export default function UsabilityTest() {
       if (tag === "input" || tag === "textarea") return;
 
       const circleKeyMap = {
-        q: 0, w: 1, e: 2, r: 3, t: 4,
-        a: 5, s: 6, d: 7, f: 8, g: 9,
-        z: 10, x: 11, c: 12, v: 13, b: 14,
-        n: 15, m: 16, h: 17, j: 18, k: 19,
+        q: 0,
+        w: 1,
+        e: 2,
+        r: 3,
+        t: 4,
+        a: 5,
+        s: 6,
+        d: 7,
+        f: 8,
+        g: 9,
+        z: 10,
+        x: 11,
+        c: 12,
+        v: 13,
+        b: 14,
+        n: 15,
+        m: 16,
+        h: 17,
+        j: 18,
+        k: 19,
       };
 
       if (key in circleKeyMap) {
@@ -209,7 +324,7 @@ export default function UsabilityTest() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [colorsForCurrentTest]);
 
-  return (
+  return  (
     <div className="utWrap">
       {/* ✅ Skip link (2.4.1) */}
       <a className="skip-link" href="#main-content">
@@ -235,7 +350,10 @@ export default function UsabilityTest() {
         <div className="utGrid">
           {/* Paleta */}
           <section className="utPanel utPanel--palette" aria-labelledby="paleta-title">
-            <h2 id="paleta-title" className="utTitle utTitle--italic"> Elige tu color</h2>
+            <h2 id="paleta-title" className="utTitle utTitle--italic">
+              {" "}
+              Elige tu color
+            </h2>
 
             <div className="utPaletteGrid" role="group" aria-label="Paleta de colores (0-9)">
               {colorsForCurrentTest.map((c) => {
@@ -257,33 +375,14 @@ export default function UsabilityTest() {
                 );
               })}
             </div>
-
-            <div className="utHintSmall hintCard">
-              <strong> Instrucciones rápidas</strong>
-              <br />
-              Elige un color de la paleta
-              <br />
-              Haz clic en un círculo para pintarlo
-              <br />
-              Repite hasta completar el patrón
-
-              <hr />
-
-               <strong>Puedes seleccionar el objeto a pintar por teclado con las teclas :</strong>
-              Q W E R T A S D F G Z X C V B N M H J K
-              <br />
-               <strong>Puedes seleccionar el color por teclado con las teclas:</strong> 0 – 9
-            </div>
-
-
-            <div className="utHintSmall">
-              Progreso: {progress.painted}/{progress.total}
-            </div>
           </section>
 
           {/* Referencia */}
           <section className="utPanel utPanel--ref" aria-labelledby="ref-title">
-            <h2 id="ref-title" className="utTitle utTitle--italic"> Observa y copia el patrón</h2>
+            <h2 id="ref-title" className="utTitle utTitle--italic">
+              {" "}
+              Observa y copia el patrón
+            </h2>
             {referenceImage ? (
               <img
                 src={referenceImage}
@@ -297,7 +396,10 @@ export default function UsabilityTest() {
 
           {/* Dibujo */}
           <section className="utPanel utPanel--board" aria-labelledby="board-title">
-            <h2 id="board-title" className="utTitle utTitle--italic"> Tu turno: pinta aquí</h2>
+            <h2 id="board-title" className="utTitle utTitle--italic">
+              {" "}
+              Tu turno: pinta aquí
+            </h2>
 
             <PaintBoard
               key={currentSeed}
@@ -311,10 +413,67 @@ export default function UsabilityTest() {
               onAnswersChange={setAnswersByCircle}
             />
           </section>
+
+          {/* ✅ Panel de instrucciones a la derecha */}
+          <section
+            className="utPanel utPanel--help"
+            role="region"
+            aria-labelledby="help-title"
+            aria-label="Instrucciones"
+          >
+            <section tabIndex={0} aria-label="Instrucciones">
+            <h2 id="help-title" className="utTitle utTitle--italic">
+              {" "}
+              Instrucciones
+            </h2>
+
+            <div className="utHelpCard" aria-label="Instrucciones rápidas">
+              <strong aria-label="Título de instrucciones rápidas">
+                {" "}
+                Instrucciones rápidas
+              </strong>
+
+              <p aria-label="Paso 1 de instrucciones rápidas">
+                Elige un color de la paleta
+              </p>
+              <p  aria-label="Paso 2 de instrucciones rápidas">
+                Haz clic en un círculo para pintarlo
+              </p>
+              <p  aria-label="Paso 3 de instrucciones rápidas">
+                Repite hasta completar el patrón
+              </p>
+
+              <hr />
+
+              <p  aria-label="Atajo de teclado para seleccionar el objeto a pintar">
+                <strong>
+                  {" "}
+                  Puedes seleccionar el objeto a pintar por teclado con las teclas :
+                </strong>
+              </p>
+
+              <p  aria-label="Teclas para seleccionar círculos">
+                Q W E R T A S D F G Z X C V B N M H J K
+              </p>
+
+              <p  aria-label="Atajo de teclado para seleccionar el color">
+                <strong>
+                  {" "}
+                  Puedes seleccionar el color por teclado con las teclas:
+                </strong>{" "}
+                0 – 9
+              </p>
+
+              <p  aria-label="Progreso del usuario">
+                Progreso: {progress.painted}/{progress.total}
+              </p>
+            </div>
+            </section>
+          </section>
         </div>
 
         <footer className="utFooter">
-          <div className="utQuestion">{questionText}</div>
+          <div className="utQuestion" tabIndex={0} >{questionText}</div>
           <button className="utNext" type="button" onClick={goNext}>
             {qIndex < totalQuestions - 1 ? "Siguiente  >" : "Finalizar  >"}
           </button>

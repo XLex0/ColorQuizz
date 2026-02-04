@@ -16,6 +16,9 @@ export default function Home() {
   const profileRef = useRef(null);
   const testimonialsRef = useRef(null);
 
+  // ✅ Scope de TAB para la “página de arriba” (Navbar + Home)
+  const homeScopeRef = useRef(null);
+
   const [openSettings, setOpenSettings] = useState(false);
   const [activeTab, setActiveTab] = useState(null);
 
@@ -62,12 +65,94 @@ export default function Home() {
         if (section === "home") setActiveTab(null);
         else setActiveTab(section);
       },
-      { rootMargin: "-35% 0px -55% 0px", threshold: [0.05, 0.15, 0.3, 0.5] }
+      { rootMargin: "-25% 0px -60% 0px", threshold: [0.05, 0.15, 0.3, 0.5] }
     );
 
     items.forEach((it) => obs.observe(it.el));
     return () => obs.disconnect();
   }, []);
+
+  // ✅ Helper: focusables dentro de un contenedor (para TAB por sección visible)
+  const getFocusable = (root) => {
+    if (!root) return [];
+
+    const selectors = [
+      'a[href]',
+      'button:not([disabled])',
+      'input:not([disabled]):not([type="hidden"])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(",");
+
+    return Array.from(root.querySelectorAll(selectors)).filter((el) => {
+      const style = window.getComputedStyle(el);
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        !el.hasAttribute("disabled")
+      );
+    });
+  };
+
+  // ✅ TAB “por página/sección”: si estás abajo NO regresa arriba.
+  // - En HOME: permite tabear Navbar + hero + tabs (homeScopeRef)
+  // - En otras secciones: tabea SOLO dentro de la sección visible
+  useEffect(() => {
+    const sectionRoots = {
+      home: homeScopeRef,
+      instructions: instructionsRef,
+      profile: profileRef,
+      testimonials: testimonialsRef,
+    };
+
+    const getActiveRoot = () => {
+      const key = activeTab ?? "home"; // null => home
+      return sectionRoots[key]?.current ?? null;
+    };
+
+    const onTabKeyDown = (e) => {
+      if (e.key !== "Tab") return;
+
+      const root = getActiveRoot();
+      if (!root) return;
+
+      const focusables = getFocusable(root);
+      if (focusables.length === 0) return;
+
+      const current = document.activeElement;
+      const inside = root.contains(current);
+
+      // Si el foco se fue fuera del “scope” (ej. click en otra parte),
+      // al presionar TAB lo re-encarrilamos dentro del scope visible.
+      if (!inside) {
+        e.preventDefault();
+        const target = e.shiftKey
+          ? focusables[focusables.length - 1]
+          : focusables[0];
+        target.focus();
+        return;
+      }
+
+      // Wrap-around: evita que TAB salga del scope y “salte” al inicio del DOM.
+      const idx = focusables.indexOf(current);
+      if (idx === -1) return;
+
+      if (!e.shiftKey && idx === focusables.length - 1) {
+        e.preventDefault();
+        focusables[0].focus();
+      }
+
+      if (e.shiftKey && idx === 0) {
+        e.preventDefault();
+        focusables[focusables.length - 1].focus();
+      }
+    };
+
+    // Captura = evita que el navegador continúe al siguiente focus del DOM (arriba)
+    window.addEventListener("keydown", onTabKeyDown, true);
+    return () => window.removeEventListener("keydown", onTabKeyDown, true);
+  }, [activeTab]);
 
   // keyboard arrows navigation between page sections
   useEffect(() => {
@@ -117,7 +202,6 @@ export default function Home() {
     if (!el) return;
 
     el.scrollIntoView({ behavior: "smooth", block: "start" });
-
     setTimeout(() => el.focus({ preventScroll: true }), 350);
   };
 
@@ -131,43 +215,49 @@ export default function Home() {
           Saltar al contenido principal
         </a>
 
-        <Navbar onOpenSettings={() => setOpenSettings(true)} />
+        {/* ✅ Navbar pertenece a la página de arriba + Home (scope para TAB cuando estás arriba) */}
+        <div ref={homeScopeRef}>
+          <Navbar onOpenSettings={() => setOpenSettings(true)} />
 
-        <main id="main-content" className="page">
-          <section ref={homeRef} data-section="home" className="screen screen-home" tabIndex={0}>
-            <div className="hero">
-              <div className="heroBox">
-                <h2 className="heroQ" tabIndex={0}>¿Tienes daltonismo?</h2>
-                <h1 className="heroTitle" tabIndex={0}>HACER PRUEBA</h1>
+          <main id="main-content" className="page">
+            <section ref={homeRef} data-section="home" className="screen screen-home" tabIndex={0}>
+              <div className="hero">
+                <div className="heroBox">
+                  <h2 className="heroQ" tabIndex={0}>¿Tienes daltonismo?</h2>
+                  <h1 className="heroTitle" tabIndex={0}>HACER PRUEBA</h1>
 
-                <button className="primaryBtn" onClick={() => nav("/test")}>
-                  COMENZAR
+                  <button className="primaryBtn" onClick={() => nav("/test")}>
+                    COMENZAR
+                  </button>
+                </div>
+              </div>
+
+              <div className="tabs" role="navigation" aria-label="Secciones de la página">
+                <button
+                  className={`tab ${activeTab === "instructions" ? "active" : ""}`}
+                  onClick={() => scrollTo("instructions")}
+                >
+                  Instrucciones
+                </button>
+                <button
+                  className={`tab ${activeTab === "profile" ? "active" : ""}`}
+                  onClick={() => scrollTo("profile")}
+                >
+                  Perfil Visual
+                </button>
+                <button
+                  className={`tab ${activeTab === "testimonials" ? "active" : ""}`}
+                  onClick={() => scrollTo("testimonials")}
+                >
+                  Testimonios
                 </button>
               </div>
-            </div>
+            </section>
+          </main>
+        </div>
 
-            <div className="tabs" role="navigation" aria-label="Secciones de la página">
-              <button
-                className={`tab ${activeTab === "instructions" ? "active" : ""}`}
-                onClick={() => scrollTo("instructions")}
-              >
-                Instrucciones
-              </button>
-              <button
-                className={`tab ${activeTab === "profile" ? "active" : ""}`}
-                onClick={() => scrollTo("profile")}
-              >
-                Perfil Visual
-              </button>
-              <button
-                className={`tab ${activeTab === "testimonials" ? "active" : ""}`}
-                onClick={() => scrollTo("testimonials")}
-              >
-                Testimonios
-              </button>
-            </div>
-          </section>
-
+        {/* ✅ El resto de secciones quedan FUERA del scope del Home */}
+        <main className="page">
           {/* PANTALLA 2 */}
           <section
             ref={instructionsRef}
@@ -179,7 +269,7 @@ export default function Home() {
           >
             <header className="instructionsHeader">
               <div className="helpIcon" aria-hidden="true">?</div>
-              <h2 id="instructions-title" className="instructionsTitle" tabIndex={0}>
+              <h2 id="instructions-title" className="instructionsTitle" >
                 Instrucciones
               </h2>
             </header>
@@ -217,7 +307,8 @@ export default function Home() {
                     Pinta el <strong>dibujo en blanco y negro</strong>:
                     <ul>
                       <li>Haz clic sobre los círculos para aplicar el color seleccionado.</li>
-                      <li>También puedes usar el <strong>teclado</strong> presionando la letra que aparece en cada círculo
+                      <li>
+                        También puedes usar el <strong>teclado</strong> presionando la letra que aparece en cada círculo
                         (<strong>Q W E R T A S D F G Z X C V B N M H J K</strong>).
                       </li>
                     </ul>
@@ -257,7 +348,7 @@ export default function Home() {
             </h2>
 
             <div className="profileStack">
-              <article className="profileCard" tabIndex={0} aria-label="Qué es el daltonismo">
+              <article className="profileCard" aria-label="Qué es el daltonismo">
                 <h3 className="profileCardTitle" tabIndex={0}>¿Qué es el daltonismo?</h3>
                 <p className="profileText" tabIndex={0}>
                   Si usted tiene daltonismo (deficiencia en la visión de los colores),
@@ -267,44 +358,48 @@ export default function Home() {
                 </p>
               </article>
 
-              <article className="profileCard" tabIndex={0} aria-label="Riesgos de daltonismo">
+              <article className="profileCard" aria-label="Riesgos de daltonismo">
                 <h3 className="profileCardTitle" tabIndex={0}>¿Corro riesgo de presentar daltonismo?</h3>
-                <p className="profileText" tabIndex={0}>
-                  Los hombres corren un riesgo mucho mayor de presentar daltonismo que las
-                  mujeres. También es más probable que usted sea daltónico si:
-                </p>
-                <ul className="profileBullets">
-                  <li>Tiene antecedentes familiares de daltonismo</li>
-                  <li>Tiene ciertas enfermedades oculares</li>
-                  <li>
-                    Tiene ciertos problemas de salud, como diabetes, enfermedad de Alzheimer
-                    o esclerosis múltiple
-                  </li>
-                </ul>
+                <section tabIndex={0} aria-label="Riesgos de daltonismo">
+                  <p className="profileText">
+                    Los hombres corren un riesgo mucho mayor de presentar daltonismo que las
+                    mujeres. También es más probable que usted sea daltónico si:
+                  </p>
+                  <ul className="profileBullets">
+                    <li>Tiene antecedentes familiares de daltonismo</li>
+                    <li>Tiene ciertas enfermedades oculares</li>
+                    <li>
+                      Tiene ciertos problemas de salud, como diabetes, enfermedad de Alzheimer
+                      o esclerosis múltiple
+                    </li>
+                  </ul>
+                </section>
               </article>
 
-              <article className="profileCard" tabIndex={0} aria-label="Tipos de daltonismo">
+              <article className="profileCard" aria-label="Tipos de daltonismo">
                 <h3 className="profileCardTitle" tabIndex={0}>Tipos de daltonismo</h3>
-                <p className="profileText" tabIndex={0}>El daltonismo rojo-verde es el más común e incluye:</p>
-                <ul className="profileBullets">
-                  <li><strong>Deuteranomalía:</strong> el verde se ve rojizo (leve).</li>
-                  <li><strong>Protanomalía:</strong> el rojo se ve verdoso y menos brillante (leve).</li>
-                  <li><strong>Protanopia y deuteranopia:</strong> no se distingue entre rojo y verde.</li>
-                </ul>
+                <section tabIndex={0} aria-label="Tipos de daltonismo">
+                  <p className="profileText">El daltonismo rojo-verde es el más común e incluye:</p>
+                  <ul className="profileBullets">
+                    <li><strong>Deuteranomalía:</strong> el verde se ve rojizo (leve).</li>
+                    <li><strong>Protanomalía:</strong> el rojo se ve verdoso y menos brillante (leve).</li>
+                    <li><strong>Protanopia y deuteranopia:</strong> no se distingue entre rojo y verde.</li>
+                  </ul>
 
-                <p className="profileText" tabIndex={0}>El daltonismo azul-amarillo es menos común e incluye:</p>
-                <ul className="profileBullets">
-                  <li><strong>Tritanomalía:</strong> difícil diferenciar azul-verde y amarillo-rojo.</li>
-                  <li>
-                    <strong>Tritanopia:</strong> no se distinguen azul-verde, violeta-rojo ni
-                    amarillo-rosado; colores menos brillantes.
-                  </li>
-                </ul>
+                  <p className="profileText">El daltonismo azul-amarillo es menos común e incluye:</p>
+                  <ul className="profileBullets">
+                    <li><strong>Tritanomalía:</strong> difícil diferenciar azul-verde y amarillo-rojo.</li>
+                    <li>
+                      <strong>Tritanopia:</strong> no se distinguen azul-verde, violeta-rojo ni
+                      amarillo-rosado; colores menos brillantes.
+                    </li>
+                  </ul>
 
-                <p className="profileText" tabIndex={0}>
-                  El daltonismo completo (monocromacia) es raro y hace que la persona no vea colores;
-                  puede incluir visión poco clara y sensibilidad a la luz.
-                </p>
+                  <p className="profileText">
+                    El daltonismo completo (monocromacia) es raro y hace que la persona no vea colores;
+                    puede incluir visión poco clara y sensibilidad a la luz.
+                  </p>
+                </section>
               </article>
             </div>
 
@@ -378,5 +473,3 @@ export default function Home() {
     </div>
   );
 }
-
-

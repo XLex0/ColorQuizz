@@ -1,8 +1,21 @@
-import { useState, useRef } from "react";
+import { useId, useRef, useState } from "react";
 
 export default function Navbar({ onOpenSettings }) {
   const [tip, setTip] = useState(null);
+  const [tipOwner, setTipOwner] = useState(null); // "who" | "purpose" | null
   const navRef = useRef(null);
+
+  const tooltipId = useId(); // id único para aria-describedby
+
+  const showTip = (owner, text) => {
+    setTipOwner(owner);
+    setTip(text);
+  };
+
+  const hideTip = () => {
+    setTipOwner(null);
+    setTip(null);
+  };
 
   const handleNavKeyDown = (e) => {
     const nav = navRef.current;
@@ -39,24 +52,42 @@ export default function Navbar({ onOpenSettings }) {
         >
           <button
             className="toplink"
+            aria-describedby={tip && tipOwner === "who" ? tooltipId : undefined}
             onMouseEnter={() =>
-              setTip(
+              showTip(
+                "who",
                 "ColorQuizz es un proyecto creado para ayudarte a descubrir, de forma rápida y divertida, posibles indicios de daltonismo."
               )
             }
-            onMouseLeave={() => setTip(null)}
+            onMouseLeave={hideTip}
+            onFocus={() =>
+              showTip(
+                "who",
+                "ColorQuizz es un proyecto creado para ayudarte a descubrir, de forma rápida y divertida, posibles indicios de daltonismo."
+              )
+            }
+            onBlur={hideTip}
           >
             ¿Quiénes somos?
           </button>
 
           <button
             className="toplink"
+            aria-describedby={tip && tipOwner === "purpose" ? tooltipId : undefined}
             onMouseEnter={() =>
-              setTip(
+              showTip(
+                "purpose",
                 "Ofrecer una forma sencilla y confiable de detectar posibles alteraciones en la percepción del color."
               )
             }
-            onMouseLeave={() => setTip(null)}
+            onMouseLeave={hideTip}
+            onFocus={() =>
+              showTip(
+                "purpose",
+                "Ofrecer una forma sencilla y confiable de detectar posibles alteraciones en la percepción del color."
+              )
+            }
+            onBlur={hideTip}
           >
             Propósito
           </button>
@@ -67,7 +98,16 @@ export default function Navbar({ onOpenSettings }) {
         </button>
       </div>
 
-      {tip && <div className="tooltip">{tip}</div>}
+      {/* ✅ Tooltip accesible para lectores de pantalla */}
+      <div
+        id={tooltipId}
+        className="tooltip"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {tip ?? ""}
+      </div>
     </header>
   );
 }

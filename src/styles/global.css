@@ -233,9 +233,9 @@ button:focus,
 }
 
 .screen{
-  min-height: 100vh;
+  min-height: 80vh;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
   padding: clamp(16px, 3vw, 34px) clamp(14px, 3vw, 28px);
   display: grid;
   align-content: start;
@@ -505,6 +505,10 @@ button:focus,
 .screen-home .tab:hover{ background: rgba(0,0,0,0.55); }
 
 .screen-home .tab.active{ background: rgba(0,0,0,0.70); }
+.screen-home{
+  min-height: auto;        /* o 80vh si quieres un “mínimo” */
+  min-height: unset;
+}
 
 /* =========================
    BOTÓN FLOTANTE ARRIBA
@@ -799,6 +803,11 @@ button:focus,
   height: auto; /* por si el contenido crece */
   min-height: 64px;
 }
+.topbar{
+  position: relative; /* 🔑 ancla elementos internos */
+  padding: 0 clamp(12px, 2vw, 22px);
+}
+
 .screen{
   scroll-margin-top: 96px; /* ya lo tienes, ok */
 }
@@ -822,13 +831,3 @@ html, body {
   max-width: 100%;
   overflow-x: clip; /* mejor que hidden en navegadores modernos */
 }
-
-/*
-*{
-  line-height: 1.5 !important;
-  letter-spacing: 0.12em !important;
-  word-spacing: 0.16em !important;
-}
-p{
-  margin-bottom: 2em !important;
-}*/
