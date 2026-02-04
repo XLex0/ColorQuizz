@@ -95,9 +95,7 @@ export default function Home() {
     });
   };
 
-  // ✅ TAB “por página/sección”: si estás abajo NO regresa arriba.
-  // - En HOME: permite tabear Navbar + hero + tabs (homeScopeRef)
-  // - En otras secciones: tabea SOLO dentro de la sección visible
+
   useEffect(() => {
     const sectionRoots = {
       home: homeScopeRef,
@@ -188,6 +186,175 @@ export default function Home() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [homeRef, instructionsRef, profileRef, testimonialsRef]);
+  // ✅ Flechas dentro de componentes (no afecta el JSX)
+  useEffect(() => {
+    // ---------- 1) Barra de tabs (Instrucciones | Perfil Visual | Testimonios): < y > ----------
+    const homeEl = homeRef.current;
+    const tabsEl = homeEl?.querySelector(".tabs");
+    const tabBtns = tabsEl
+      ? Array.from(tabsEl.querySelectorAll('button.tab:not([disabled])'))
+      : [];
+
+    const onTabsArrows = (e) => {
+      if (!tabsEl) return;
+
+      const insideTabs = tabsEl.contains(e.target);
+      if (!insideTabs) return;
+
+      // Solo flechas horizontales
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+
+      // Evita que el handler global (flechas entre secciones) se dispare
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (tabBtns.length === 0) return;
+
+      const active = document.activeElement;
+      let idx = tabBtns.indexOf(active);
+
+      // Si por alguna razón el foco está dentro del tabs pero no en un botón, lo anclamos al primero
+      if (idx === -1) {
+        tabBtns[0].focus();
+        return;
+      }
+
+      const dir = e.key === "ArrowRight" ? 1 : -1;
+      const nextIdx = (idx + dir + tabBtns.length) % tabBtns.length;
+      tabBtns[nextIdx].focus();
+    };
+
+    // Captura para ganarle al listener global
+    window.addEventListener("keydown", onTabsArrows, true);
+
+    return () => window.removeEventListener("keydown", onTabsArrows, true);
+  }, [homeRef]);
+
+  useEffect(() => {
+    // ---------- 2) Instrucciones: navegar items 1,2,3... con ↑ ↓ ----------
+    const root = instructionsRef.current;
+    if (!root) return;
+
+    // Solo items principales (no los sub-items del ul)
+    const getMainItems = () =>
+      Array.from(root.querySelectorAll(".instructionsList > li[tabindex='0']"));
+
+    const onInstructionsArrows = (e) => {
+      // Solo dentro del card de instrucciones / lista
+      const card = root.querySelector(".instructionsCard");
+      const list = root.querySelector(".instructionsList");
+      const inside = (card && card.contains(e.target)) || (list && list.contains(e.target));
+      if (!inside) return;
+
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+
+      // Evita que el handler global cambie de sección
+      e.preventDefault();
+      e.stopPropagation();
+
+      const items = getMainItems();
+      if (items.length === 0) return;
+
+      const active = document.activeElement;
+
+      // Determina el item actual (si estás enfocado en el li o dentro de él)
+      let idx = items.findIndex((li) => li === active || li.contains(active));
+      if (idx === -1) {
+        items[0].focus();
+        return;
+      }
+
+      const dir = e.key === "ArrowDown" ? 1 : -1;
+      const nextIdx = Math.max(0, Math.min(items.length - 1, idx + dir));
+      items[nextIdx].focus();
+    };
+
+    window.addEventListener("keydown", onInstructionsArrows, true);
+    return () => window.removeEventListener("keydown", onInstructionsArrows, true);
+  }, [instructionsRef]);
+
+  useEffect(() => {
+    // ---------- 3) Perfil: moverse entre los 3 contenedores (cards) con ↑ ↓ ----------
+    const root = profileRef.current;
+    if (!root) return;
+
+    const getCards = () =>
+      Array.from(root.querySelectorAll(".profileStack .profileCard"));
+
+    const focusFirstInCard = (card) => {
+      // Toma el primer elemento realmente enfocables dentro de la card
+      const focusables = getFocusable(card);
+      if (focusables.length > 0) focusables[0].focus();
+      else card.focus?.();
+    };
+
+    const onProfileArrows = (e) => {
+      const cards = getCards();
+      if (cards.length === 0) return;
+
+      // Solo si el foco está dentro de la sección Perfil
+      const insideProfile = root.contains(e.target);
+      if (!insideProfile) return;
+
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+
+      // Evita que el handler global cambie de sección
+      e.preventDefault();
+      e.stopPropagation();
+
+      const active = document.activeElement;
+
+      // Card actual: la que contiene el foco
+      let idx = cards.findIndex((c) => c === active || c.contains(active));
+
+      if (idx === -1) {
+        // Si por alguna razón estás en el título de sección u otro elemento,
+        // saltamos a la primera card
+        focusFirstInCard(cards[0]);
+        return;
+      }
+
+      const dir = e.key === "ArrowDown" ? 1 : -1;
+      const nextIdx = Math.max(0, Math.min(cards.length - 1, idx + dir));
+      focusFirstInCard(cards[nextIdx]);
+    };
+
+    window.addEventListener("keydown", onProfileArrows, true);
+    return () => window.removeEventListener("keydown", onProfileArrows, true);
+  }, [profileRef]);
+
+    // ✅ ESC: salir de navegación interna / limpiar selección
+  useEffect(() => {
+    const onEscape = (e) => {
+      if (e.key !== "Escape") return;
+
+      const active = document.activeElement;
+      if (!active) return;
+
+      // Si estamos dentro de alguna sección conocida
+      const roots = [
+        homeRef.current,
+        instructionsRef.current,
+        profileRef.current,
+        testimonialsRef.current,
+      ].filter(Boolean);
+
+      const parentSection = roots.find((r) => r.contains(active));
+      if (!parentSection) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Quita foco del elemento actual
+      active.blur?.();
+
+      // Devuelve el foco al contenedor de la sección (estado "neutral")
+      parentSection.focus({ preventScroll: true });
+    };
+
+    window.addEventListener("keydown", onEscape, true);
+    return () => window.removeEventListener("keydown", onEscape, true);
   }, [homeRef, instructionsRef, profileRef, testimonialsRef]);
 
   const scrollTo = (section) => {

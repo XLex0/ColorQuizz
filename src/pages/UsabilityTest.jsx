@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PaintBoard from "../components/PaintBoard";
 import "../styles/usability-test.css";
@@ -34,6 +34,7 @@ const TESTS = [
     jsonKey: "TEST6_TRITANOPIA_YELLOW_PINK_COLORS",
   },
 ];
+
 const CIRCLE_KEYS = [
   "q",
   "w",
@@ -216,6 +217,10 @@ export default function UsabilityTest() {
   const [answersByCircle, setAnswersByCircle] = useState({});
   const [results, setResults] = useState([]);
 
+  // ✅ Refs para navegación con flechas (paleta e instrucciones)
+  const paletteRef = useRef(null);
+  const helpRef = useRef(null);
+
   const currentTest = TESTS[qIndex];
   const currentSeed = SEEDS[qIndex] ?? SEEDS[0];
 
@@ -233,7 +238,7 @@ export default function UsabilityTest() {
 
   const questionText = useMemo(
     () => `Pregunta ${qIndex + 1}/${totalQuestions}`,
-    [qIndex, totalQuestions],
+    [qIndex, totalQuestions]
   );
 
   const answerKey = useMemo(() => {
@@ -246,7 +251,7 @@ export default function UsabilityTest() {
     return generateReferenceImage(
       colorsForCurrentTest,
       currentSeed,
-      CIRCLES_COUNT,
+      CIRCLES_COUNT
     );
   }, [colorsForCurrentTest, currentSeed]);
 
@@ -275,6 +280,7 @@ export default function UsabilityTest() {
     }
   };
 
+  // ✅ Tu listener original (letras para círculo + números para color)
   useEffect(() => {
     const onKeyDown = (e) => {
       const raw = e.key || "";
@@ -324,7 +330,115 @@ export default function UsabilityTest() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [colorsForCurrentTest]);
 
-  return  (
+  // ✅ NUEVO: Flechas dentro de Paleta e Instrucciones + ESC para salir
+  useEffect(() => {
+    const getPaletteButtons = () => {
+      const root = paletteRef.current;
+      if (!root) return [];
+      return Array.from(
+        root.querySelectorAll("button.utSwatchBtn:not([disabled])")
+      );
+    };
+
+    const getHelpItems = () => {
+      const root = helpRef.current;
+      if (!root) return [];
+      return Array.from(root.querySelectorAll("strong, p")).filter((el) => {
+        const style = window.getComputedStyle(el);
+        return style.display !== "none" && style.visibility !== "hidden";
+      });
+    };
+
+    const focusHelpItem = (el) => {
+      if (!el) return;
+      if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+      el.focus({ preventScroll: true });
+    };
+
+    const onKeyDown = (e) => {
+      const k = e.key;
+
+      const inPalette =
+        paletteRef.current && paletteRef.current.contains(e.target);
+      const inHelp = helpRef.current && helpRef.current.contains(e.target);
+
+      // ESC: salir del grupo
+      if (k === "Escape" && (inPalette || inHelp)) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Quita foco “seleccionado”
+        document.activeElement?.blur?.();
+
+        if (inPalette) {
+          const panel = paletteRef.current?.closest(".utPanel");
+          panel?.focus?.({ preventScroll: true });
+        } else if (inHelp) {
+          const focusableWrapper =
+            helpRef.current?.closest('section[tabindex="0"]');
+          focusableWrapper?.focus?.({ preventScroll: true });
+        }
+        return;
+      }
+
+      // Paleta: flechas por la grilla
+      if (
+        inPalette &&
+        ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(k)
+      ) {
+        const btns = getPaletteButtons();
+        if (!btns.length) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const active = document.activeElement;
+        let idx = btns.indexOf(active);
+
+        if (idx === -1) {
+          btns[0].focus({ preventScroll: true });
+          return;
+        }
+
+        // columnas reales (según primera fila)
+        const rects = btns.map((b) => b.getBoundingClientRect());
+        const firstTop = rects[0].top;
+        const cols =
+          rects.filter((r) => Math.abs(r.top - firstTop) < 5).length || 1;
+
+        let nextIdx = idx;
+        if (k === "ArrowLeft") nextIdx = Math.max(0, idx - 1);
+        if (k === "ArrowRight") nextIdx = Math.min(btns.length - 1, idx + 1);
+        if (k === "ArrowUp") nextIdx = Math.max(0, idx - cols);
+        if (k === "ArrowDown") nextIdx = Math.min(btns.length - 1, idx + cols);
+
+        btns[nextIdx].focus({ preventScroll: true });
+        return;
+      }
+
+      // Instrucciones: ↑ ↓ para moverte por items
+      if (inHelp && (k === "ArrowUp" || k === "ArrowDown")) {
+        const items = getHelpItems();
+        if (!items.length) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const active = document.activeElement;
+        let idx = items.findIndex((el) => el === active || el.contains(active));
+        if (idx === -1) idx = 0;
+
+        const dir = k === "ArrowDown" ? 1 : -1;
+        const nextIdx = Math.max(0, Math.min(items.length - 1, idx + dir));
+        focusHelpItem(items[nextIdx]);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, []);
+
+  return (
     <div className="utWrap">
       {/* ✅ Skip link (2.4.1) */}
       <a className="skip-link" href="#main-content">
@@ -349,13 +463,21 @@ export default function UsabilityTest() {
 
         <div className="utGrid">
           {/* Paleta */}
-          <section className="utPanel utPanel--palette" aria-labelledby="paleta-title">
+          <section
+            className="utPanel utPanel--palette"
+            aria-labelledby="paleta-title"
+          >
             <h2 id="paleta-title" className="utTitle utTitle--italic">
               {" "}
               Elige tu color
             </h2>
 
-            <div className="utPaletteGrid" role="group" aria-label="Paleta de colores (0-9)">
+            <div
+              ref={paletteRef}
+              className="utPaletteGrid"
+              role="group"
+              aria-label="Paleta de colores (0-9)"
+            >
               {colorsForCurrentTest.map((c) => {
                 const active = selectedKey === c.key;
                 return (
@@ -367,7 +489,10 @@ export default function UsabilityTest() {
                     aria-pressed={active}
                     title={`Color ${c.key}`}
                   >
-                    <span className="utSwatchColor" style={{ background: c.hex }} />
+                    <span
+                      className="utSwatchColor"
+                      style={{ background: c.hex }}
+                    />
                     <span className="utSwatchText">
                       <span className="utSwatchKey">{c.key}</span>
                     </span>
@@ -395,7 +520,10 @@ export default function UsabilityTest() {
           </section>
 
           {/* Dibujo */}
-          <section className="utPanel utPanel--board" aria-labelledby="board-title">
+          <section
+            className="utPanel utPanel--board"
+            aria-labelledby="board-title"
+          >
             <h2 id="board-title" className="utTitle utTitle--italic">
               {" "}
               Tu turno: pinta aquí
@@ -422,58 +550,65 @@ export default function UsabilityTest() {
             aria-label="Instrucciones"
           >
             <section tabIndex={0} aria-label="Instrucciones">
-            <h2 id="help-title" className="utTitle utTitle--italic">
-              {" "}
-              Instrucciones
-            </h2>
-
-            <div className="utHelpCard" aria-label="Instrucciones rápidas">
-              <strong aria-label="Título de instrucciones rápidas">
+              <h2 id="help-title" className="utTitle utTitle--italic">
                 {" "}
-                Instrucciones rápidas
-              </strong>
+                Instrucciones
+              </h2>
 
-              <p aria-label="Paso 1 de instrucciones rápidas">
-                Elige un color de la paleta
-              </p>
-              <p  aria-label="Paso 2 de instrucciones rápidas">
-                Haz clic en un círculo para pintarlo
-              </p>
-              <p  aria-label="Paso 3 de instrucciones rápidas">
-                Repite hasta completar el patrón
-              </p>
-
-              <hr />
-
-              <p  aria-label="Atajo de teclado para seleccionar el objeto a pintar">
-                <strong>
+              <div
+                ref={helpRef}
+                className="utHelpCard"
+                aria-label="Instrucciones rápidas"
+              >
+                <strong aria-label="Título de instrucciones rápidas">
                   {" "}
-                  Puedes seleccionar el objeto a pintar por teclado con las teclas :
+                  Instrucciones rápidas
                 </strong>
-              </p>
 
-              <p  aria-label="Teclas para seleccionar círculos">
-                Q W E R T A S D F G Z X C V B N M H J K
-              </p>
+                <p aria-label="Paso 1 de instrucciones rápidas">
+                  Elige un color de la paleta
+                </p>
+                <p aria-label="Paso 2 de instrucciones rápidas">
+                  Haz clic en un círculo para pintarlo
+                </p>
+                <p aria-label="Paso 3 de instrucciones rápidas">
+                  Repite hasta completar el patrón
+                </p>
 
-              <p  aria-label="Atajo de teclado para seleccionar el color">
-                <strong>
-                  {" "}
-                  Puedes seleccionar el color por teclado con las teclas:
-                </strong>{" "}
-                0 – 9
-              </p>
+                <hr />
 
-              <p  aria-label="Progreso del usuario">
-                Progreso: {progress.painted}/{progress.total}
-              </p>
-            </div>
+                <p aria-label="Atajo de teclado para seleccionar el objeto a pintar">
+                  <strong>
+                    {" "}
+                    Puedes seleccionar el objeto a pintar por teclado con las
+                    teclas :
+                  </strong>
+                </p>
+
+                <p aria-label="Teclas para seleccionar círculos">
+                  Q W E R T A S D F G Z X C V B N M H J K
+                </p>
+
+                <p aria-label="Atajo de teclado para seleccionar el color">
+                  <strong>
+                    {" "}
+                    Puedes seleccionar el color por teclado con las teclas:
+                  </strong>{" "}
+                  0 – 9
+                </p>
+
+                <p aria-label="Progreso del usuario">
+                  Progreso: {progress.painted}/{progress.total}
+                </p>
+              </div>
             </section>
           </section>
         </div>
 
         <footer className="utFooter">
-          <div className="utQuestion" tabIndex={0} >{questionText}</div>
+          <div className="utQuestion" tabIndex={0}>
+            {questionText}
+          </div>
           <button className="utNext" type="button" onClick={goNext}>
             {qIndex < totalQuestions - 1 ? "Siguiente  >" : "Finalizar  >"}
           </button>
