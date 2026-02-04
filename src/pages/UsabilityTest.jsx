@@ -235,7 +235,7 @@ export default function UsabilityTest() {
         <div className="utGrid">
           {/* Paleta */}
           <section className="utPanel utPanel--palette" aria-labelledby="paleta-title">
-            <h2 id="paleta-title" className="utTitle utTitle--italic">🎨 Elige tu color</h2>
+            <h2 id="paleta-title" className="utTitle utTitle--italic"> Elige tu color</h2>
 
             <div className="utPaletteGrid" role="group" aria-label="Paleta de colores (0-9)">
               {colorsForCurrentTest.map((c) => {
@@ -259,20 +259,20 @@ export default function UsabilityTest() {
             </div>
 
             <div className="utHintSmall hintCard">
-              <strong>🎮 Instrucciones rápidas</strong>
+              <strong> Instrucciones rápidas</strong>
               <br />
-              🎨 Elige un color de la paleta
+              Elige un color de la paleta
               <br />
-              🖱️ Haz clic en un círculo para pintarlo
+              Haz clic en un círculo para pintarlo
               <br />
-              🔁 Repite hasta completar el patrón
+              Repite hasta completar el patrón
 
               <hr />
 
-              ⌨️ <strong>Teclado:</strong>
+               <strong>Puedes seleccionar el objeto a pintar por teclado con las teclas :</strong>
               Q W E R T A S D F G Z X C V B N M H J K
               <br />
-              🎨 <strong>Colores:</strong> 0 – 9
+               <strong>Puedes seleccionar el color por teclado con las teclas:</strong> 0 – 9
             </div>
 
 
@@ -283,7 +283,7 @@ export default function UsabilityTest() {
 
           {/* Referencia */}
           <section className="utPanel utPanel--ref" aria-labelledby="ref-title">
-            <h2 id="ref-title" className="utTitle utTitle--italic">🔍 Observa y copia el patrón</h2>
+            <h2 id="ref-title" className="utTitle utTitle--italic"> Observa y copia el patrón</h2>
             {referenceImage ? (
               <img
                 src={referenceImage}
@@ -297,7 +297,7 @@ export default function UsabilityTest() {
 
           {/* Dibujo */}
           <section className="utPanel utPanel--board" aria-labelledby="board-title">
-            <h2 id="board-title" className="utTitle utTitle--italic">🖍️ Tu turno: pinta aquí</h2>
+            <h2 id="board-title" className="utTitle utTitle--italic"> Tu turno: pinta aquí</h2>
 
             <PaintBoard
               key={currentSeed}
